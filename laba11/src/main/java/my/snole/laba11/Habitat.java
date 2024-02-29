@@ -1,6 +1,7 @@
 package my.snole.laba11;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import my.snole.laba11.Ant.Ant;
 import my.snole.laba11.Ant.WarriorAnt;
 import my.snole.laba11.Ant.WorkerAnt;
@@ -210,8 +211,8 @@ public class Habitat  {
     }
 
     private void setAnt(Ant ant) {
-        int x = (int) (Math.random() * 750);
-        int y = (int) (Math.random() * 350);
+        int x = (int) (Math.random() * 700);
+        int y = (int) (Math.random() * 550);
         ImageView imageView = new ImageView(ant.getImage());
         imageView.setX(x);
         imageView.setY(y);
@@ -229,6 +230,15 @@ public class Habitat  {
 
     //2 лаба---------------------------------
     @FXML
+    private RadioButton showInformationButton;
+    @FXML
+    private RadioButton hideInformationButton;
+
+    @FXML
+    private Button startButton;
+    @FXML
+    private Button stopButton;
+    @FXML
     private void handleStart(ActionEvent event) {
         startSimulation();
     }
@@ -237,11 +247,20 @@ public class Habitat  {
     private void handleStop(ActionEvent event) {
         stopSimulation();
     }
+    @FXML
+    private void handleShowInformationAction() {
+        if (!popup.isShowing()) {
+            updateTimeLabel();
+            showTimePopup();
+        }
+    }
+    @FXML
+    private void handleHideInformationAction() {
+        if (popup.isShowing()) {
+            popup.hide();
+        }
+    }
 
-    @FXML
-    private Button startButton;
-    @FXML
-    private Button stopButton;
 
 
     private void startSimulation() {

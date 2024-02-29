@@ -37,11 +37,11 @@
                 </Button>
                 <Text layoutX="98.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" />
                 <CheckBox layoutX="48.0" layoutY="131.0" mnemonicParsing="false" text="Show information window" textFill="WHITE" />
-                <RadioButton layoutX="48.0" layoutY="158.0" mnemonicParsing="false" text="Show information" textFill="WHITE">
+                <RadioButton fx:id="showInformationButton" layoutX="48.0" layoutY="158.0" mnemonicParsing="false" text="Show simulation time" textFill="WHITE" onAction="#handleShowInformationAction">
                <toggleGroup>
                   <ToggleGroup fx:id="infoToggleGroup" />
                </toggleGroup></RadioButton>
-                <RadioButton layoutX="48.0" layoutY="184.0" mnemonicParsing="false" text="Hide information" textFill="WHITE" toggleGroup="$infoToggleGroup" />
+                <RadioButton fx:id="hideInformationButton" layoutX="48.0" layoutY="184.0" mnemonicParsing="false" text="Hide simulation time" textFill="WHITE" toggleGroup="$infoToggleGroup" onAction="#handleHideInformationAction"/>
                 <Text fill="WHITE" layoutX="107.0" layoutY="269.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WorkerAnt">
                     <font>
                         <Font name="Comic Sans MS" size="16.0" />
