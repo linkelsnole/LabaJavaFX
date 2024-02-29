@@ -6,6 +6,7 @@ import java.io.File;
 
 public class WorkerAnt extends Ant {
     private int n1 = 3;
+    private int n = 3;
     private float p1 = 0.45f;
 
     public WorkerAnt () {
