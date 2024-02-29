@@ -1,5 +1,6 @@
 package my.snole.laba11;
 
+import javafx.scene.control.Button;
 import my.snole.laba11.Ant.Ant;
 import my.snole.laba11.Ant.WarriorAnt;
 import my.snole.laba11.Ant.WorkerAnt;
@@ -20,6 +21,7 @@ import javafx.scene.text.TextFlow;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.paint.Color;
+import javafx.event.ActionEvent;
 
 
 
@@ -127,34 +129,11 @@ public class Habitat  {
     public void run(KeyEvent event) {
         if (event.getCode() == KeyCode.B) {
             System.out.println("B key pressed");
-//            clearScene();
-            eKeyPressed = false;
-            if (summaryPopup.isShowing()) {
-                summaryPopup.hide();
-            }
-            if (popup.isShowing()) {
-                popup.hide();
-            }
-            startTime = System.currentTimeMillis();
-            if (task != null) {
-                task.cancel();
-            }
-            timer = new Timer();
-            task = createTimerTask();
-            timer.schedule(task, 0, 1000);
+            startSimulation();
         } else if (event.getCode() == KeyCode.E) {
             if (!eKeyPressed) {
-                list.clear();
-                if (task != null) {
-                    task.cancel();
-                    task = null;
-                }
-                stoptime = System.currentTimeMillis() - startTime;
-                updateTimeLabel();
+                stopSimulation();
                 showSummaryPopup();
-                popup.hide();
-                timer.purge();
-                eKeyPressed = true;
             }
             System.out.println("E key pressed. Task cancelled");
         } else if (event.getCode() == KeyCode.T) {
@@ -171,11 +150,45 @@ public class Habitat  {
         }
         event.consume();
     }
+    private void clearListAndTask() {
+        list.clear();
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+        stoptime = System.currentTimeMillis() - startTime;
+        timer.purge();
+    }
+    private void scheduleTask() {
+        if (task != null) {
+            task.cancel();
+        }
+        timer = new Timer();
+        task = createTimerTask();
+        timer.schedule(task, 0, 1000);
+    }
+    private void hidePopups () {
+        if (summaryPopup.isShowing()) {
+            summaryPopup.hide();
+        }
+        if (popup.isShowing()) {
+            popup.hide();
+        }
+    }
 
-    private void clearScene () {
+    private void clearScene() {
         workerAntcount = 0;
         warriorAntcount = 0;
-        scene.getChildren().clear();
+
+
+        if (popup.isShowing()) {
+            popup.hide();
+        }
+        if (summaryPopup.isShowing()) {
+            summaryPopup.hide();
+        }
+
+        scene.getChildren().removeIf(node -> node instanceof ImageView);
     }
 
     private void update(long time) {
@@ -198,7 +211,7 @@ public class Habitat  {
 
     private void setAnt(Ant ant) {
         int x = (int) (Math.random() * 750);
-        int y = (int) (Math.random() * 590);
+        int y = (int) (Math.random() * 350);
         ImageView imageView = new ImageView(ant.getImage());
         imageView.setX(x);
         imageView.setY(y);
@@ -208,6 +221,48 @@ public class Habitat  {
     boolean checkProbability(float f) {
         float probability = (float)Math.random();
         return f <= probability;
+    }
+
+
+
+
+
+    //2 лаба---------------------------------
+    @FXML
+    private void handleStart(ActionEvent event) {
+        startSimulation();
+    }
+
+    @FXML
+    private void handleStop(ActionEvent event) {
+        stopSimulation();
+    }
+
+    @FXML
+    private Button startButton;
+    @FXML
+    private Button stopButton;
+
+
+    private void startSimulation() {
+        clearScene();
+        eKeyPressed = false;
+        hidePopups();
+        startTime = System.currentTimeMillis();
+        scheduleTask();
+        startButton.setDisable(true);
+        stopButton.setDisable(false);
+    }
+
+    private void stopSimulation() {//!переделать чтобы была статистика по 7 пункту
+        if (!eKeyPressed) {
+            clearListAndTask();
+            updateTimeLabel();
+            popup.hide();
+            eKeyPressed = true;
+            startButton.setDisable(false);
+            stopButton.setDisable(true);
+        }
     }
 
 }

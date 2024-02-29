@@ -5,20 +5,21 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" style="-fx-background-color: #FFFAFA;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.Habitat">
+<AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" style="-fx-background-color: #FFFAFA;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.Habitat">
     <children>
         <Label fx:id="label" />
         <AnchorPane layoutX="807.0" prefHeight="647.0" prefWidth="293.0" style="-fx-background-color: #696969;">
             <children>
                 <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="149.0" layoutX="39.0" layoutY="379.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
                 <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="149.0" layoutX="39.0" layoutY="237.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
-                <Button layoutX="48.0" layoutY="26.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="191.0" text="Start">
+                <Button fx:id="startButton" disable="false" layoutX="48.0" layoutY="26.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="33.0" prefWidth="191.0" text="Start">
                     <effect>
                         <Blend />
                     </effect>
@@ -26,7 +27,7 @@
                         <Font name="Verdana" size="16.0" />
                     </font>
                 </Button>
-                <Button layoutX="48.0" layoutY="77.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="191.0" text="Stop">
+                <Button fx:id="stopButton" disable="true" layoutX="48.0" layoutY="77.0" mnemonicParsing="false" onAction="#handleStop" prefHeight="33.0" prefWidth="191.0" text="Stop">
                     <effect>
                         <Blend />
                     </effect>
@@ -36,8 +37,11 @@
                 </Button>
                 <Text layoutX="98.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" />
                 <CheckBox layoutX="48.0" layoutY="131.0" mnemonicParsing="false" text="Show information window" textFill="WHITE" />
-                <RadioButton layoutX="48.0" layoutY="158.0" mnemonicParsing="false" text="Show information" textFill="WHITE" />
-                <RadioButton layoutX="48.0" layoutY="184.0" mnemonicParsing="false" text="Hide information" textFill="WHITE" />
+                <RadioButton layoutX="48.0" layoutY="158.0" mnemonicParsing="false" text="Show information" textFill="WHITE">
+               <toggleGroup>
+                  <ToggleGroup fx:id="infoToggleGroup" />
+               </toggleGroup></RadioButton>
+                <RadioButton layoutX="48.0" layoutY="184.0" mnemonicParsing="false" text="Hide information" textFill="WHITE" toggleGroup="$infoToggleGroup" />
                 <Text fill="WHITE" layoutX="107.0" layoutY="269.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WorkerAnt">
                     <font>
                         <Font name="Comic Sans MS" size="16.0" />

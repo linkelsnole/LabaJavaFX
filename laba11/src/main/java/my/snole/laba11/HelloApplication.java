@@ -1,11 +1,14 @@
 package my.snole.laba11;
 
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
-
+import my.snole.laba11.Habitat;
 import java.io.IOException;
+
 
 public class HelloApplication extends Application {
     @Override
@@ -16,6 +19,7 @@ public class HelloApplication extends Application {
         Habitat controller = fxmlLoader.getController();
         stage.setTitle("Ant Simulation");
         scene.setOnKeyPressed(controller::run);
+
 
         stage.setScene(scene);
         stage.show();
