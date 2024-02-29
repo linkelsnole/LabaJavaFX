@@ -172,7 +172,7 @@ public class Habitat  {
         event.consume();
     }
 
-    private void clearScene () {
+    private void clearScene() {
         workerAntcount = 0;
         warriorAntcount = 0;
         scene.getChildren().clear();
@@ -197,7 +197,7 @@ public class Habitat  {
     }
 
     private void setAnt(Ant ant) {
-        int x = (int) (Math.random() * 750);
+        int x = (int) (Math.random() * 550);
         int y = (int) (Math.random() * 590);
         ImageView imageView = new ImageView(ant.getImage());
         imageView.setX(x);
