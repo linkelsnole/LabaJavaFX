@@ -127,7 +127,7 @@ public class Habitat  {
     public void run(KeyEvent event) {
         if (event.getCode() == KeyCode.B) {
             System.out.println("B key pressed");
-            clearScene();
+//            clearScene();
             eKeyPressed = false;
             if (summaryPopup.isShowing()) {
                 summaryPopup.hide();
