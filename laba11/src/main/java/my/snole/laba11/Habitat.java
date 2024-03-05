@@ -205,6 +205,7 @@ public class Habitat  {
         imageView.setVisible(true);
         scene.getChildren().add(imageView);
     }
+
     boolean checkProbability(float f) {
         float probability = (float)Math.random();
         return f <= probability;

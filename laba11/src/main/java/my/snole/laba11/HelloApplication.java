@@ -1,4 +1,5 @@
 package my.snole.laba11;
+import javafx.application.Platform;
 import my.snole.laba11.UIController.UIController;
 
 import javafx.application.Application;
@@ -24,6 +25,11 @@ public class HelloApplication extends Application {
 
         stage.setScene(scene);
         stage.show();
+
+        stage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
     }
 
     public static void main(String[] args) {
