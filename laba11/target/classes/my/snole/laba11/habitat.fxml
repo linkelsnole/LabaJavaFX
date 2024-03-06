@@ -41,7 +41,7 @@
                <toggleGroup>
                   <ToggleGroup fx:id="infoToggleGroup" />
                </toggleGroup></RadioButton>
-                <RadioButton fx:id="hideInformationButton" layoutX="48.0" layoutY="184.0" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Hide simulation time" textFill="WHITE" toggleGroup="$infoToggleGroup" />
+                <RadioButton fx:id="hideInformationButton" layoutX="48.0" layoutY="184.0" mnemonicParsing="false" onAction="#handleHideInformationAction" text="Hide simulation time" textFill="WHITE" toggleGroup="$infoToggleGroup" />
                 <Text fill="WHITE" layoutX="107.0" layoutY="269.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WorkerAnt">
                     <font>
                         <Font name="Comic Sans MS" size="16.0" />

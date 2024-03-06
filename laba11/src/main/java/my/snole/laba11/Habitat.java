@@ -1,22 +1,19 @@
 package my.snole.laba11;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.*;
 import my.snole.laba11.Ant.Ant;
 import my.snole.laba11.Ant.WarriorAnt;
 import my.snole.laba11.Ant.WorkerAnt;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Popup;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import java.util.*;
+
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.scene.text.Font;
@@ -246,6 +243,7 @@ public class Habitat  {
     @FXML
     private void handleStop(ActionEvent event) {
         stopSimulation();
+        showStopSimulationDialog();
     }
     @FXML
     private void handleShowInformationAction() {
@@ -281,6 +279,34 @@ public class Habitat  {
             eKeyPressed = true;
             startButton.setDisable(false);
             stopButton.setDisable(true);
+        }
+    }
+
+    private void showStopSimulationDialog() {
+        long totalElapsedTime = isSimulationStopped ? stoptime : System.currentTimeMillis() - startTime;
+        long second = (totalElapsedTime / 1000) % 60;
+        long minute = (totalElapsedTime / (1000 * 60)) % 60;
+        long hour = (totalElapsedTime / (1000 * 60 * 60)) % 24;
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.initOwner(scene.getScene().getWindow());
+        dialog.setTitle("Simulation information");
+        dialog.setHeaderText("Simulation Summary:");
+
+        //типы кнопок
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        TextArea textArea = new TextArea();//отображение инфы
+        textArea.setEditable(false);
+        textArea.setText(String.format("Passed Time: %02d:%02d:%02d\nWorker Ants: %d\nWarrior Ants: %d", hour, minute, second, workerAntcount, warriorAntcount));
+        dialog.getDialogPane().setContent(textArea);
+
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            stopSimulation();
+        } else {
+
         }
     }
 
