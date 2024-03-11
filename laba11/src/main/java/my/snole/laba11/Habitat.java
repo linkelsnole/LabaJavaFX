@@ -19,22 +19,19 @@ import javafx.scene.text.TextFlow;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.paint.Color;
-import javafx.event.ActionEvent;
 import java.util.Optional;
 
 
 
 public class Habitat  {
     private long startTime;
-    private boolean isSimulationStopped = false;
+    private final boolean isSimulationStopped = false;
     private long stoptime = 0;
     private int warriorAntcount = 0;
     private int workerAntcount = 0;
     List<Ant> list = new ArrayList<>();
-    private WorkerAnt a = new WorkerAnt();
-    private WarriorAnt b = new WarriorAnt();
-    private Popup popup = new Popup();
-    private Popup summaryPopup = new Popup();
+    private final Popup popup = new Popup();
+    private final Popup summaryPopup = new Popup();
 
     @FXML
     public AnchorPane scene;
@@ -53,6 +50,7 @@ public class Habitat  {
             }
         };
     }
+
 
     private void updateTimeLabel() {
         long timeFromStart = isSimulationStopped ? stoptime : System.currentTimeMillis() - startTime;
@@ -179,7 +177,6 @@ public class Habitat  {
         workerAntcount = 0;
         warriorAntcount = 0;
 
-
         if (popup.isShowing()) {
             popup.hide();
         }
@@ -190,8 +187,12 @@ public class Habitat  {
         scene.getChildren().removeIf(node -> node instanceof ImageView);
     }
 
+
     private void update(long time) {
-        if (time %  a.getN1() == 0 && checkProbability(a.getP1())) {
+        if (!simulationActive) {
+            return;
+        }
+        if (time %  WorkerAnt.getN1() == 0 && checkProbability(WorkerAnt.getP1())) {
             WorkerAnt workerAnt = new WorkerAnt();
             list.add(workerAnt);
             setAnt(workerAnt);
@@ -199,7 +200,7 @@ public class Habitat  {
             workerAntcount++;
         }
 
-        if (time % b.getN2() == 0 && checkProbability(b.getP2())) {
+        if (time % WarriorAnt.getN2() == 0 && checkProbability(WarriorAnt.getP2())) {
             WarriorAnt warriorAnt = new WarriorAnt();
             list.add(warriorAnt);
             setAnt(warriorAnt);
@@ -219,7 +220,7 @@ public class Habitat  {
     }
     boolean checkProbability(float f) {
         float probability = (float)Math.random();
-        return f <= probability;
+        return f >= probability;
     }
 
 
@@ -231,20 +232,22 @@ public class Habitat  {
     private RadioButton showInformationButton;
     @FXML
     private RadioButton hideInformationButton;
+    private boolean simulationActive;
 
     @FXML
     private Button startButton;
     @FXML
     private Button stopButton;
     @FXML
-    private void handleStart(ActionEvent event) {
+    private CheckBox showWindow;
+    @FXML
+    private void handleStart() {
         startSimulation();
     }
 
     @FXML
-    private void handleStop(ActionEvent event) {
+    private void handleStop() {
         stopSimulation();
-        showStopSimulationDialog();
     }
     @FXML
     private void handleShowInformationAction() {
@@ -270,18 +273,27 @@ public class Habitat  {
         scheduleTask();
         startButton.setDisable(true);
         stopButton.setDisable(false);
+        simulationActive = true;
     }
 
-    private void stopSimulation() {//!переделать чтобы была статистика по 7 пункту
-        if (!eKeyPressed) {
-            clearListAndTask();
-            updateTimeLabel();
-            popup.hide();
-            eKeyPressed = true;
-            startButton.setDisable(false);
-            stopButton.setDisable(true);
+    private void stopSimulation() {
+        simulationActive = false;
+        eKeyPressed = true;
+        if (showWindow.isSelected()) {
+            showStopSimulationDialog();
+        } else {
+            actuallyStopSimulation();
         }
     }
+    private void actuallyStopSimulation() {
+        clearListAndTask();
+        updateTimeLabel();
+        popup.hide();
+        startButton.setDisable(false);
+        stopButton.setDisable(true);
+        simulationActive = false;
+    }
+
 
     private void showStopSimulationDialog() {
         long totalElapsedTime = isSimulationStopped ? stoptime : System.currentTimeMillis() - startTime;
@@ -294,10 +306,9 @@ public class Habitat  {
         dialog.setTitle("Simulation information");
         dialog.setHeaderText("Simulation Summary:");
 
-        //типы кнопок
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-        TextArea textArea = new TextArea();//отображение инфы
+        TextArea textArea = new TextArea();
         textArea.setEditable(false);
         textArea.setText(String.format("Passed Time: %02d:%02d:%02d\nWorker Ants: %d\nWarrior Ants: %d", hour, minute, second, workerAntcount, warriorAntcount));
         dialog.getDialogPane().setContent(textArea);
@@ -305,10 +316,23 @@ public class Habitat  {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            stopSimulation();
+            actuallyStopSimulation();
         } else {
-
+            eKeyPressed = false;
+            simulationActive = true;
         }
     }
+
+    @FXML
+    private ComboBox<Integer> comboProbWork;
+    @FXML
+    private ComboBox<Integer> comboProbWar;
+    @FXML
+    private TextField timeTextWork;
+    @FXML
+    private TextField timeTextWar;
+
+
+
 
 }

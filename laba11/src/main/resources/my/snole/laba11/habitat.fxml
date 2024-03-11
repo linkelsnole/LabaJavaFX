@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -36,7 +37,7 @@
                     </font>
                 </Button>
                 <Text layoutX="98.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" />
-                <CheckBox layoutX="48.0" layoutY="131.0" mnemonicParsing="false" text="Show information window" textFill="WHITE" />
+                <CheckBox fx:id="showWindow" layoutX="48.0" layoutY="131.0" mnemonicParsing="false" text="Show information window" textFill="WHITE" />
                 <RadioButton fx:id="showInformationButton" layoutX="48.0" layoutY="158.0" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Show simulation time" textFill="WHITE">
                <toggleGroup>
                   <ToggleGroup fx:id="infoToggleGroup" />
@@ -72,10 +73,10 @@
                         <Font size="14.0" />
                     </font>
                 </Text>
-                <ComboBox layoutX="174.0" layoutY="291.0" prefHeight="26.0" prefWidth="75.0" />
-                <ComboBox layoutX="174.0" layoutY="332.0" prefHeight="26.0" prefWidth="75.0" />
-                <ComboBox layoutX="174.0" layoutY="438.0" prefHeight="26.0" prefWidth="75.0" />
-                <ComboBox layoutX="174.0" layoutY="479.0" prefHeight="26.0" prefWidth="75.0" />
+                <ComboBox fx:id="comboProbWork" layoutX="174.0" layoutY="291.0" prefHeight="26.0" prefWidth="75.0" promptText="40" />
+                <ComboBox fx:id="comboProbWar" layoutX="174.0" layoutY="438.0" prefHeight="26.0" prefWidth="75.0" promptText="30" />
+            <TextField fx:id="timeTextWork" layoutX="174.0" layoutY="332.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
+            <TextField fx:id="timeTextWar" layoutX="174.0" layoutY="479.0" prefHeight="26.0" prefWidth="75.0" promptText="5" />
             </children>
         </AnchorPane>
     </children>

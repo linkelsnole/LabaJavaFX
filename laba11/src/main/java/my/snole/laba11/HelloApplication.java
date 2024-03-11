@@ -1,12 +1,10 @@
 package my.snole.laba11;
 
 import javafx.application.Application;
-import javafx.fxml.FXML;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import my.snole.laba11.Habitat;
 import java.io.IOException;
 
 
@@ -20,6 +18,10 @@ public class HelloApplication extends Application {
         stage.setTitle("Ant Simulation");
         scene.setOnKeyPressed(controller::run);
 
+        stage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
 
         stage.setScene(scene);
         stage.show();

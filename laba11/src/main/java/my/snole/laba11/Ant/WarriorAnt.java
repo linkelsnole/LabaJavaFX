@@ -3,22 +3,27 @@ package my.snole.laba11.Ant;
 import javafx.scene.image.Image;
 
 import java.io.File;
-
+import java.io.InputStream;
+import java.util.Objects;
 
 
 public class WarriorAnt extends Ant {
-    private int n2 = 5;
-    private float p2 = 0.36f;
+    static private int n2 = 5;
+    static private float p2 = 0.3f;
 
     public WarriorAnt() {
-        image = new Image(new File("/Users/dmitry/Desktop/IDEA-projects/laba11/image/war.png").toURI().toString());
+        InputStream stream = getClass().getResourceAsStream("/image/war.png");
+        if (stream == null) {
+            throw new RuntimeException("Cannot find resource file /image/war.png");
+        }
+        image = new Image(stream);
     }
 
-    public int getN2() {
+    static public int getN2() {
         return n2;
     }
 
-    public float getP2() {
+    static public float getP2() {
         return p2;
     }
 }
