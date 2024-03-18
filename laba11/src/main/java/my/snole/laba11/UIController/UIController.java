@@ -13,29 +13,26 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Popup;
-import my.snole.laba11.model.Ant.Ant;
-import my.snole.laba11.model.Ant.WarriorAnt;
-import my.snole.laba11.model.Ant.WorkerAnt;
-import my.snole.laba11.model.Point;
+import my.snole.laba11.Habitat;
 import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.service.UIService;
 import java.util.*;
 
+
 public class UIController {
-    private long startTime;
-    private final boolean isSimulationStopped = false;
-    private long stoptime = 0;
-    private int warriorAntcount = 0;
-    private int workerAntcount = 0;
+//    private long startTime;
+//    private final boolean isSimulationStopped = false;
+//    private long stoptime = 0;
+//    private int warriorAntcount = 0;
+//    private int workerAntcount = 0;
     private SingletonDynamicArray list;
     private final Popup popup = new Popup();
     private final Popup summaryPopup = new Popup();
     private final UIService service = new UIService();
 
-    private boolean eKeyPressed = false;
-
     @FXML
     public AnchorPane scene;
+    private Habitat habitat;
 
     @FXML
     private ComboBox<Integer> comboProbWork;
@@ -49,7 +46,6 @@ public class UIController {
     private RadioButton showInformationButton;
     @FXML
     private RadioButton hideInformationButton;
-    private boolean simulationActive;
 
     @FXML
     private Button startButton;
@@ -85,7 +81,7 @@ public class UIController {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    update(System.currentTimeMillis(), finalWorkerAntN, finalWarriorAntN, workerAntP1, warriorAntP2);
+                    habitat.update(System.currentTimeMillis(), finalWorkerAntN, finalWarriorAntN, workerAntP1, warriorAntP2);
                     if (popup.isShowing()) {
                         updateTimeLabel();
                     }
@@ -93,23 +89,53 @@ public class UIController {
             }
         };
     }
+    @FXML
+    private void initialize() {
+        habitat = new Habitat(scene);
+        habitat.setHabitatListener(imageView -> scene.getChildren().add(imageView));
+        habitat.setSimulationStateListener(new Habitat.SimulationStateListener() {
+            @Override
+            public void onSimulationStarted() {
+                Platform.runLater(() -> {
+                    clearScene();
+                    hidePopups();
+                    scheduleTask();
+                    startButton.setDisable(true);
+                    stopButton.setDisable(false);
+                });
+            }
+            @Override
+            public void onSimulationStopped() {
+                Platform.runLater(() -> {
+                    if (showWindow.isSelected()) {
+                        showStopSimulationDialog();
+                    } else {
+                        actuallyStopSimulation();
+                    }
+                    startButton.setDisable(false);
+                    stopButton.setDisable(true);
+                });
+            }
+        });
+    }
+
 
     private void updateTimeLabel() {
         if (!popup.getContent().isEmpty() && popup.getContent().get(0) instanceof Label label) {
-            label.setText(service.generateTimeString(isSimulationStopped, stoptime, startTime));
+            label.setText(service.generateTimeString(Habitat.isSimulationStopped, Habitat.stoptime, Habitat.startTime));
         }
     }
 
     private void showSummaryPopup() {
-        Text timerText = new Text(String.format("Passed Time: %s\n", service.generateTimeString(isSimulationStopped, stoptime, startTime)));
+        Text timerText = new Text(String.format("Passed Time: %s\n", service.generateTimeString(Habitat.isSimulationStopped, Habitat.stoptime, Habitat.startTime)));
         timerText.setFill(Color.BLACK);
         timerText.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, 24));
 
-        Text workerText = new Text(String.format("Worker Ants: %d\n", workerAntcount));
+        Text workerText = new Text(String.format("Worker Ants: %d\n", Habitat.workerAntcount));
         workerText.setFill(Color.BLUE);
         workerText.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, 24));
 
-        Text warriorText = new Text(String.format("Warrior Ants: %d", warriorAntcount));
+        Text warriorText = new Text(String.format("Warrior Ants: %d", Habitat.warriorAntcount));
         warriorText.setFill(Color.RED);
         warriorText.setFont(Font.font("Comic Sans MS", FontWeight.BOLD, 24));
 
@@ -152,13 +178,13 @@ public class UIController {
                 scene.getScene().getWindow().getY() + scene.getScene().getHeight() - label.getMinHeight() - 5);
     }
 
-    public void run(KeyEvent event) {
+    public void run(KeyEvent event) {//сделать switch
         if (event.getCode() == KeyCode.B) {
             System.out.println("B key pressed");
-            startSimulation();
+            habitat.startSimulation();
         } else if (event.getCode() == KeyCode.E) {
-            if (!eKeyPressed) {
-                stopSimulation();
+            if (!Habitat.eKeyPressed) {
+                habitat.stopSimulation();
                 showSummaryPopup();
             }
             System.out.println("E key pressed. Task cancelled");
@@ -177,13 +203,84 @@ public class UIController {
         event.consume();
     }
 
+
+
+    @FXML
+    private void handleStart() {
+        habitat.startSimulation();
+    }
+
+    @FXML
+    private void handleStop() {
+        habitat.stopSimulation();
+    }
+
+    @FXML
+    private void handleShowInformationAction() {
+        if (!popup.isShowing()) {
+            updateTimeLabel();
+            showTimePopup();
+        }
+    }
+
+    @FXML
+    private void handleHideInformationAction() {
+        if (popup.isShowing()) {
+            popup.hide();
+        }
+    }
+
+
+
+
+
+    private void showStopSimulationDialog() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.initOwner(scene.getScene().getWindow());
+        dialog.setTitle("Simulation information");
+        dialog.setHeaderText("Simulation Summary:");
+
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        TextArea textArea = new TextArea();
+        textArea.setEditable(false);
+        textArea.setText(String.format("Passed Time: %s\nWorker Ants: %d\nWarrior Ants: %d", service.generateTimeString(Habitat.isSimulationStopped, Habitat.stoptime, Habitat.startTime), Habitat.workerAntcount, Habitat.warriorAntcount));
+        dialog.getDialogPane().setContent(textArea);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            actuallyStopSimulation();
+        } else {
+            Habitat.eKeyPressed = false;
+            Habitat.simulationActive = true;
+        }
+    }
+
+    void showErrorPopUp(int defaultValue) {
+        Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Ошибка ввода данных");
+                    alert.setHeaderText("Введено неверное значение! Симуляция выполняется с использованием значения по умолчанию (" + defaultValue + ")");
+                    alert.showAndWait();
+                }
+        );
+    }
+
+    public void actuallyStopSimulation() {//перенести
+        clearListAndTask();
+        updateTimeLabel();
+        popup.hide();
+        Habitat.simulationActive = false;
+    }
+
+
     private void clearListAndTask() {
         list.clear();
         if (task != null) {
             task.cancel();
             task = null;
         }
-        stoptime = System.currentTimeMillis() - startTime;
+        Habitat.stoptime = System.currentTimeMillis() - Habitat.startTime;
         timer.purge();
     }
 
@@ -206,8 +303,8 @@ public class UIController {
     }
 
     private void clearScene() {
-        workerAntcount = 0;
-        warriorAntcount = 0;
+        Habitat.workerAntcount = 0;
+        Habitat.warriorAntcount = 0;
 
         if (popup.isShowing()) {
             popup.hide();
@@ -218,128 +315,5 @@ public class UIController {
 
         scene.getChildren().removeIf(node -> node instanceof ImageView);
     }
-
-
-    private void update(long time, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2) {
-        if (!simulationActive) {
-            return;
-        }
-
-        if (time % workerAntN1 == 0 && service.checkProbability(workerAntP1)) {
-            WorkerAnt workerAnt = new WorkerAnt();
-            list.addElement(workerAnt);
-            setAnt(workerAnt);
-            System.out.println("workerAnt");
-            workerAntcount++;
-        }
-
-        if (time % warriorAntN2 == 0 && service.checkProbability(warriorAntP2)) {
-            WarriorAnt warriorAnt = new WarriorAnt();
-            list.addElement(warriorAnt);
-            setAnt(warriorAnt);
-            System.out.println("warAnt");
-            warriorAntcount++;
-        }
-    }
-
-    private void setAnt(Ant ant) {
-        Point point = service.generateRandomPoint();
-        ImageView imageView = new ImageView(ant.getImage());
-        imageView.setX(point.getX());
-        imageView.setY(point.getY());
-        imageView.setVisible(true);
-        scene.getChildren().add(imageView);
-    }
-
-    @FXML
-    private void handleStart() {
-        startSimulation();
-    }
-
-    @FXML
-    private void handleStop() {
-        stopSimulation();
-    }
-
-    @FXML
-    private void handleShowInformationAction() {
-        if (!popup.isShowing()) {
-            updateTimeLabel();
-            showTimePopup();
-        }
-    }
-
-    @FXML
-    private void handleHideInformationAction() {
-        if (popup.isShowing()) {
-            popup.hide();
-        }
-    }
-
-
-    private void startSimulation() {
-        clearScene();
-        eKeyPressed = false;
-        hidePopups();
-        startTime = System.currentTimeMillis();
-        list = SingletonDynamicArray.getInstance();
-        scheduleTask();
-        startButton.setDisable(true);
-        stopButton.setDisable(false);
-        simulationActive = true;
-    }
-
-    private void stopSimulation() {
-        simulationActive = false;
-        eKeyPressed = true;
-        if (showWindow.isSelected()) {
-            showStopSimulationDialog();
-        } else {
-            actuallyStopSimulation();
-        }
-    }
-
-    private void actuallyStopSimulation() {
-        clearListAndTask();
-        updateTimeLabel();
-        popup.hide();
-        startButton.setDisable(false);
-        stopButton.setDisable(true);
-        simulationActive = false;
-    }
-
-
-    private void showStopSimulationDialog() {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.initOwner(scene.getScene().getWindow());
-        dialog.setTitle("Simulation information");
-        dialog.setHeaderText("Simulation Summary:");
-
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-        TextArea textArea = new TextArea();
-        textArea.setEditable(false);
-        textArea.setText(String.format("Passed Time: %s\nWorker Ants: %d\nWarrior Ants: %d", service.generateTimeString(isSimulationStopped, stoptime, startTime), workerAntcount, warriorAntcount));
-        dialog.getDialogPane().setContent(textArea);
-
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            actuallyStopSimulation();
-        } else {
-            eKeyPressed = false;
-            simulationActive = true;
-        }
-    }
-
-    void showErrorPopUp(int defaultValue) {
-        Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Ошибка ввода данных");
-                    alert.setHeaderText("Введено неверное значение! Симуляция выполняется с использованием значения по умолчанию (" + defaultValue + ")");
-                    alert.showAndWait();
-                }
-        );
-    }
-
 
 }
