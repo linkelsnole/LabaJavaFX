@@ -1,4 +1,4 @@
-package my.snole.laba11.Ant;
+package my.snole.laba11.model.Ant;
 
 import my.snole.laba11.IBehaviour;
 import javafx.scene.image.Image;

@@ -13,7 +13,12 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" style="-fx-background-color: #FFFAFA;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.Habitat">
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<?import java.lang.Integer?>
+<?import javafx.scene.control.Tooltip?>
+<AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" style="-fx-background-color: #FFFAFA;"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.UIController.UIController">
     <children>
         <Label fx:id="label" />
         <AnchorPane layoutX="807.0" prefHeight="647.0" prefWidth="293.0" style="-fx-background-color: #696969;">
@@ -27,6 +32,7 @@
                     <font>
                         <Font name="Verdana" size="16.0" />
                     </font>
+                    <tooltip><Tooltip text="Начать симуляцию" /></tooltip>
                 </Button>
                 <Button fx:id="stopButton" disable="true" layoutX="48.0" layoutY="77.0" mnemonicParsing="false" onAction="#handleStop" prefHeight="33.0" prefWidth="191.0" text="Stop">
                     <effect>
@@ -35,13 +41,14 @@
                     <font>
                         <Font name="Verdana" size="16.0" />
                     </font>
+                    <tooltip><Tooltip text="Остановить симуляцию" /></tooltip>
                 </Button>
                 <Text layoutX="98.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" />
                 <CheckBox fx:id="showWindow" layoutX="48.0" layoutY="131.0" mnemonicParsing="false" text="Show information window" textFill="WHITE" />
                 <RadioButton fx:id="showInformationButton" layoutX="48.0" layoutY="158.0" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Show simulation time" textFill="WHITE">
-               <toggleGroup>
-                  <ToggleGroup fx:id="infoToggleGroup" />
-               </toggleGroup></RadioButton>
+                    <toggleGroup>
+                        <ToggleGroup fx:id="infoToggleGroup" />
+                    </toggleGroup></RadioButton>
                 <RadioButton fx:id="hideInformationButton" layoutX="48.0" layoutY="184.0" mnemonicParsing="false" onAction="#handleHideInformationAction" text="Hide simulation time" textFill="WHITE" toggleGroup="$infoToggleGroup" />
                 <Text fill="WHITE" layoutX="107.0" layoutY="269.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WorkerAnt">
                     <font>
@@ -73,10 +80,40 @@
                         <Font size="14.0" />
                     </font>
                 </Text>
-                <ComboBox fx:id="comboProbWork" layoutX="174.0" layoutY="291.0" prefHeight="26.0" prefWidth="75.0" promptText="40" />
-                <ComboBox fx:id="comboProbWar" layoutX="174.0" layoutY="438.0" prefHeight="26.0" prefWidth="75.0" promptText="30" />
-            <TextField fx:id="timeTextWork" layoutX="174.0" layoutY="332.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
-            <TextField fx:id="timeTextWar" layoutX="174.0" layoutY="479.0" prefHeight="26.0" prefWidth="75.0" promptText="5" />
+                <ComboBox fx:id="comboProbWork" layoutX="174.0" layoutY="291.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <Integer fx:value="10" />
+                            <Integer fx:value="20" />
+                            <Integer fx:value="30" />
+                            <Integer fx:value="40" />
+                            <Integer fx:value="50" />
+                            <Integer fx:value="60" />
+                            <Integer fx:value="70" />
+                            <Integer fx:value="80" />
+                            <Integer fx:value="90" />
+                        </FXCollections>
+                    </items>
+                    <tooltip><Tooltip text="Задайте вероятность появления рабочих муравьев" /></tooltip>
+                </ComboBox>
+                <ComboBox fx:id="comboProbWar" layoutX="174.0" layoutY="438.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <Integer fx:value= "10" />
+                            <Integer fx:value="20" />
+                            <Integer fx:value="30" />
+                            <Integer fx:value="40" />
+                            <Integer fx:value="50" />
+                            <Integer fx:value="60" />
+                            <Integer fx:value="70" />
+                            <Integer fx:value="80" />
+                            <Integer fx:value="90" />
+                        </FXCollections>
+                    </items>
+                    <tooltip><Tooltip text="Задайте вероятность появления муравьев воинов" /></tooltip>
+                </ComboBox>
+                <TextField fx:id="timeTextWork" layoutX="174.0" layoutY="332.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
+                <TextField fx:id="timeTextWar" layoutX="174.0" layoutY="479.0" prefHeight="26.0" prefWidth="75.0" promptText="5" />
             </children>
         </AnchorPane>
     </children>

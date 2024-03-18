@@ -5,6 +5,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import my.snole.laba11.UIController.UIController;
+
 import java.io.IOException;
 
 
@@ -14,7 +16,7 @@ public class HelloApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("habitat.fxml"));
         stage.setResizable(false);
         Scene scene = new Scene(fxmlLoader.load(), 1100, 640);
-        Habitat controller = fxmlLoader.getController();
+        UIController controller = fxmlLoader.getController();
         stage.setTitle("Ant Simulation");
         scene.setOnKeyPressed(controller::run);
 
