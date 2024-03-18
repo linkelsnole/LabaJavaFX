@@ -20,20 +20,13 @@ import java.util.*;
 
 
 public class UIController {
-//    private long startTime;
-//    private final boolean isSimulationStopped = false;
-//    private long stoptime = 0;
-//    private int warriorAntcount = 0;
-//    private int workerAntcount = 0;
     private SingletonDynamicArray list;
     private final Popup popup = new Popup();
     private final Popup summaryPopup = new Popup();
     private final UIService service = new UIService();
-
     @FXML
     public AnchorPane scene;
     private Habitat habitat;
-
     @FXML
     private ComboBox<Integer> comboProbWork;
     @FXML
@@ -46,35 +39,21 @@ public class UIController {
     private RadioButton showInformationButton;
     @FXML
     private RadioButton hideInformationButton;
-
     @FXML
     private Button startButton;
     @FXML
     private Button stopButton;
     @FXML
     private CheckBox showWindow;
-
-
     Timer timer = new Timer();
     TimerTask task;
 
     private TimerTask createTimerTask() {
-        float workerAntP1 = (comboProbWork.getValue() == null ? 40 : comboProbWork.getValue()) * 0.01f;
-        float warriorAntP2 = (comboProbWar.getValue() == null ? 30 : comboProbWar.getValue()) * 0.01f;
-        int workerAntN1;
-        int warriorAntN2;
-        try {
-            workerAntN1 = service.parseInput(timeTextWork.getText());
-        } catch (IllegalArgumentException e) {
-            showErrorPopUp(3);
-            workerAntN1 = 3;
-        }
-        try {
-            warriorAntN2 = service.parseInput(timeTextWar.getText());
-        } catch (IllegalArgumentException e) {
-            showErrorPopUp(5);
-            warriorAntN2 = 5;
-        }
+        float workerAntP1 = getProbability(comboProbWork, 40);
+        float warriorAntP2 = getProbability(comboProbWar, 30);
+        int workerAntN1 = parseInputOrUseDefault(timeTextWork, 3);
+        int warriorAntN2 = parseInputOrUseDefault(timeTextWar, 5);
+
         int finalWorkerAntN = workerAntN1;
         int finalWarriorAntN = warriorAntN2;
         return new TimerTask() {
@@ -100,6 +79,8 @@ public class UIController {
                     clearScene();
                     hidePopups();
                     scheduleTask();
+                    showInformationButton.setSelected(false);
+                    hideInformationButton.setSelected(true);
                     startButton.setDisable(true);
                     stopButton.setDisable(false);
                 });
@@ -112,6 +93,8 @@ public class UIController {
                     } else {
                         actuallyStopSimulation();
                     }
+                    showInformationButton.setSelected(false);
+                    hideInformationButton.setSelected(true);
                     startButton.setDisable(false);
                     stopButton.setDisable(true);
                 });
@@ -230,10 +213,7 @@ public class UIController {
         }
     }
 
-
-
-
-
+    // Окно статистики
     private void showStopSimulationDialog() {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.initOwner(scene.getScene().getWindow());
@@ -256,17 +236,19 @@ public class UIController {
         }
     }
 
+    //Окно ошибки
     void showErrorPopUp(int defaultValue) {
         Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Ошибка ввода данных");
-                    alert.setHeaderText("Введено неверное значение! Симуляция выполняется с использованием значения по умолчанию (" + defaultValue + ")");
+                    alert.setTitle("Data entry error");
+                    alert.setHeaderText("Incorrect value entered! Simulation is running using the default value (" + defaultValue + ")");
                     alert.showAndWait();
                 }
         );
     }
 
-    public void actuallyStopSimulation() {//перенести
+    // Вспомогательные методы
+    public void actuallyStopSimulation() {
         clearListAndTask();
         updateTimeLabel();
         popup.hide();
@@ -314,6 +296,22 @@ public class UIController {
         }
 
         scene.getChildren().removeIf(node -> node instanceof ImageView);
+    }
+
+    private float getProbability(ComboBox<Integer> comboBox, float defaultValue) {
+        if (comboBox.getValue() == null) {
+            return defaultValue;
+        }
+        return comboBox.getValue() * 0.01f;
+    }
+
+    private int parseInputOrUseDefault(TextField textField, int defaultValue) {
+        try {
+            return service.parseInput(textField.getText());
+        } catch (IllegalArgumentException e) {
+            showErrorPopUp(defaultValue);
+            return defaultValue;
+        }
     }
 
 }

@@ -1,25 +1,16 @@
 package my.snole.laba11;
 
-import my.snole.laba11.UIController.UIController;
 import my.snole.laba11.model.Point;
 import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.model.Ant.Ant;
 import my.snole.laba11.model.Ant.WarriorAnt;
 import my.snole.laba11.model.Ant.WorkerAnt;
 import my.snole.laba11.service.UIService;
-import javafx.application.Platform;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.image.ImageView;
 
-import java.util.Timer;
-
 
 public class Habitat  {
-
-    public interface SimulationStateListener {
-        void onSimulationStarted();
-        void onSimulationStopped();
-    }
 
     public static  int warriorAntcount = 0;
     public static  int workerAntcount = 0;
@@ -32,17 +23,20 @@ public class Habitat  {
     private SingletonDynamicArray list;
     private final UIService service = new UIService();
     private AnchorPane scene;
-
     private HabitatListener listener;
     public SimulationStateListener stateListener;
 
-    public void setSimulationStateListener(SimulationStateListener listener) {
-        this.stateListener = listener;
+
+    // Интерфейсы
+    public interface SimulationStateListener {
+        void onSimulationStarted();
+        void onSimulationStopped();
+    }
+    @FunctionalInterface
+    public interface HabitatListener {
+        void onAntAdded(ImageView imageView);
     }
 
-    public void setHabitatListener(HabitatListener listener) {
-        this.listener = listener;
-    }
 
     public Habitat(AnchorPane scene) {
         this.scene = scene;
@@ -90,30 +84,22 @@ public class Habitat  {
         }
     }
 
-    public void stopSimulation() {//перенести
+    public void stopSimulation() {
         simulationActive = false;
         eKeyPressed = true;
-//        if (showWindow.isSelected()) {
-//            showStopSimulationDialog();
-//        } else {
-//            actuallyStopSimulation();
-//        }
         if (stateListener != null) {
             stateListener.onSimulationStopped();
         }
     }
 
-//    public void actuallyStopSimulation() {//перенести
-//        clearListAndTask();
-//        updateTimeLabel();
-//        popup.hide();
-//        simulationActive = false;
-//        if (stateListener != null) {
-//            stateListener.onSimulationStopped();
-//        }
-//    }
+    // Сеттеры
+    public void setSimulationStateListener(SimulationStateListener listener) {
+        this.stateListener = listener;
+    }
 
+    public void setHabitatListener(HabitatListener listener) {
+        this.listener = listener;
+    }
 
-    // Вспомогательные методы
 
 }
