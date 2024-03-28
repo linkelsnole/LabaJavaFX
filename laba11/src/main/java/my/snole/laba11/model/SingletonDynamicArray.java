@@ -6,18 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SingletonDynamicArray {
-    private static List<Ant> elements;
-
+    private static List<Ant> elements = new ArrayList<>();;
+    private static SingletonDynamicArray instance = null;
     private SingletonDynamicArray() {
     }
 
-    private static class SingletonDynamicArrayHolder {
-        private static final SingletonDynamicArray instance = new SingletonDynamicArray();
-    }
+
 
     public static SingletonDynamicArray getInstance() {
-        elements = new ArrayList<>();
-        return SingletonDynamicArrayHolder.instance;
+        if(instance==null) {
+            instance = new SingletonDynamicArray();
+        }
+        return instance;
     }
 
     public static List<Ant> getElements() {

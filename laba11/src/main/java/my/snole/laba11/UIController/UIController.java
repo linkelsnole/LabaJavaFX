@@ -1,6 +1,7 @@
 package my.snole.laba11.UIController;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -45,6 +46,12 @@ public class UIController {
     private Button stopButton;
     @FXML
     private CheckBox showWindow;
+    @FXML
+    private RadioMenuItem showTimeMenuItem;
+    @FXML
+    private RadioMenuItem hideTimeMenuItem;
+    @FXML
+    private CheckMenuItem showSummaryMenuItem;
     Timer timer = new Timer();
     TimerTask task;
 
@@ -88,18 +95,19 @@ public class UIController {
             @Override
             public void onSimulationStopped() {
                 Platform.runLater(() -> {
-                    if (showWindow.isSelected()) {
+                    if (showWindow.isSelected() || showSummaryMenuItem.isSelected()) {
                         showStopSimulationDialog();
                     } else {
                         actuallyStopSimulation();
                     }
                     showInformationButton.setSelected(false);
                     hideInformationButton.setSelected(true);
-                    startButton.setDisable(false);
-                    stopButton.setDisable(true);
+                    setButtonsStopped();
+
                 });
             }
         });
+        initializeMenuBindings();
     }
 
 
@@ -161,30 +169,61 @@ public class UIController {
                 scene.getScene().getWindow().getY() + scene.getScene().getHeight() - label.getMinHeight() - 5);
     }
 
-    public void run(KeyEvent event) {//сделать switch
-        if (event.getCode() == KeyCode.B) {
-            System.out.println("B key pressed");
-            habitat.startSimulation();
-        } else if (event.getCode() == KeyCode.E) {
-            if (!Habitat.eKeyPressed) {
-                habitat.stopSimulation();
-                showSummaryPopup();
-            }
-            System.out.println("E key pressed. Task cancelled");
-        } else if (event.getCode() == KeyCode.T) {
-            if (!summaryPopup.isShowing()) {
-                if (!popup.isShowing()) {
-                    updateTimeLabel();
-                    showTimePopup();
-                } else {
-                    popup.hide();
+    public void run(KeyEvent event) {
+        switch (event.getCode()) {
+            case B:
+                System.out.println("B key pressed");
+                habitat.startSimulation();
+                break;
+            case E:
+                if (!Habitat.eKeyPressed) {
+                    habitat.stopSimulation();
+                    showSummaryPopup();
                 }
-            }
-            timer.purge();
-            System.out.println("T pressed. Popup toggled.");
+                System.out.println("E key pressed. Task cancelled");
+                break;
+            case T:
+                if (!summaryPopup.isShowing()) {
+                    if (!popup.isShowing()) {
+                        updateTimeLabel();
+                        showTimePopup();
+                    } else {
+                        popup.hide();
+                    }
+                }
+                timer.purge();
+                System.out.println("T pressed. Popup toggled.");
+                break;
+            default:
+                break;
         }
         event.consume();
     }
+
+//    public void run(KeyEvent event) {//сделать switch
+//        if (event.getCode() == KeyCode.B) {
+//            System.out.println("B key pressed");
+//            habitat.startSimulation();
+//        } else if (event.getCode() == KeyCode.E) {
+//            if (!Habitat.eKeyPressed) {
+//                habitat.stopSimulation();
+//                showSummaryPopup();
+//            }
+//            System.out.println("E key pressed. Task cancelled");
+//        } else if (event.getCode() == KeyCode.T) {
+//            if (!summaryPopup.isShowing()) {
+//                if (!popup.isShowing()) {
+//                    updateTimeLabel();
+//                    showTimePopup();
+//                } else {
+//                    popup.hide();
+//                }
+//            }
+//            timer.purge();
+//            System.out.println("T pressed. Popup toggled.");
+//        }
+//        event.consume();
+//    }
 
 
 
@@ -233,6 +272,7 @@ public class UIController {
         } else {
             Habitat.eKeyPressed = false;
             Habitat.simulationActive = true;
+            popup.hide();
         }
     }
 
@@ -310,8 +350,36 @@ public class UIController {
             return service.parseInput(textField.getText());
         } catch (IllegalArgumentException e) {
             showErrorPopUp(defaultValue);
+            textField.setText(String.valueOf(defaultValue));
             return defaultValue;
         }
     }
+
+    private void initializeMenuBindings () {
+        ToggleGroup timeToggleGroup = new ToggleGroup();
+        showTimeMenuItem.setToggleGroup(timeToggleGroup);
+        hideTimeMenuItem.setToggleGroup(timeToggleGroup);
+        showTimeMenuItem.setSelected(false);
+        showSummaryMenuItem.selectedProperty().bindBidirectional(showWindow.selectedProperty());
+        showTimeMenuItem.selectedProperty().bindBidirectional(showInformationButton.selectedProperty());
+        hideTimeMenuItem.selectedProperty().bindBidirectional(hideInformationButton.selectedProperty());
+    }
+
+    private void setButtonsStopped () {
+        showInformationButton.setSelected(false);
+        hideInformationButton.setSelected(true);
+        if(Habitat.simulationActive) {
+            startButton.setDisable(true);
+            stopButton.setDisable(false);
+        }
+        else {
+            startButton.setDisable(false);
+            stopButton.setDisable(true);
+        }
+    }
+    @FXML
+    private void handleShowSummaryAction() {
+    }
+
 
 }
