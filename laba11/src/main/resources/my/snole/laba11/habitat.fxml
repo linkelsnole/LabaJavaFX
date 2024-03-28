@@ -4,12 +4,14 @@
 <?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.Tooltip?>
@@ -19,15 +21,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.control.CheckMenuItem?>
-<?import javafx.scene.control.RadioMenuItem?>
 <AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" style="-fx-background-color: #FFFAFA;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.UIController.UIController">
     <children>
         <Label fx:id="label" />
         <AnchorPane layoutX="807.0" prefHeight="647.0" prefWidth="293.0" style="-fx-background-color: #696969;">
             <children>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="149.0" layoutX="39.0" layoutY="379.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="149.0" layoutX="39.0" layoutY="237.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
+                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="163.0" layoutX="36.0" layoutY="429.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
+                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="163.0" layoutX="36.0" layoutY="271.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
                 <Button fx:id="startButton" disable="false" layoutX="48.0" layoutY="26.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="33.0" prefWidth="191.0" text="Start">
                     <effect>
                         <Blend />
@@ -47,43 +47,43 @@
                     <tooltip><Tooltip text="Остановить симуляцию" /></tooltip>
                 </Button>
                 <Text layoutX="98.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" />
-                <CheckBox fx:id="showWindow" layoutX="48.0" layoutY="131.0" mnemonicParsing="false" text="Show information window" textFill="WHITE" />
-                <RadioButton fx:id="showInformationButton" layoutX="48.0" layoutY="158.0" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Show simulation time" textFill="WHITE">
+                <CheckBox fx:id="showWindow" layoutX="48.0" layoutY="183.0" mnemonicParsing="false" text="Show information window" textFill="WHITE" />
+                <RadioButton fx:id="showInformationButton" layoutX="48.0" layoutY="210.0" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Show simulation time" textFill="WHITE">
                     <toggleGroup>
                         <ToggleGroup fx:id="infoToggleGroup" />
                     </toggleGroup></RadioButton>
-                <RadioButton fx:id="hideInformationButton" layoutX="48.0" layoutY="184.0" mnemonicParsing="false" onAction="#handleHideInformationAction" selected="true" text="Hide simulation time" textFill="WHITE" toggleGroup="$infoToggleGroup" />
-                <Text fill="WHITE" layoutX="107.0" layoutY="269.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WorkerAnt">
+                <RadioButton fx:id="hideInformationButton" layoutX="48.0" layoutY="236.0" mnemonicParsing="false" onAction="#handleHideInformationAction" selected="true" text="Hide simulation time" textFill="WHITE" toggleGroup="$infoToggleGroup" />
+                <Text fill="WHITE" layoutX="104.0" layoutY="300.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WorkerAnt">
                     <font>
                         <Font name="Comic Sans MS" size="16.0" />
                     </font>
                 </Text>
-                <Text fill="#fffdfd" layoutX="109.0" layoutY="419.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WarriorAnt">
+                <Text fill="#fffdfd" layoutX="104.0" layoutY="458.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WarriorAnt">
                     <font>
                         <Font name="Comic Sans MS" size="16.0" />
                     </font>
                 </Text>
-                <Text fill="#f5f4f4" layoutX="63.0" layoutY="309.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Probability (%):">
+                <Text fill="#f5f4f4" layoutX="60.0" layoutY="333.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Probability (%):">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Text>
-                <Text fill="#f5f4f4" layoutX="62.0" layoutY="350.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (sec):">
+                <Text fill="#f5f4f4" layoutX="59.0" layoutY="374.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (sec):">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Text>
-                <Text fill="#fffdfd" layoutX="63.0" layoutY="456.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Probability (%):">
+                <Text fill="#fffdfd" layoutX="60.0" layoutY="489.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Probability (%):">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Text>
-                <Text fill="#fffdfd" layoutX="62.0" layoutY="497.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (sec):">
+                <Text fill="#fffdfd" layoutX="59.0" layoutY="530.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (sec):">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Text>
-                <ComboBox fx:id="comboProbWork" layoutX="174.0" layoutY="291.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
+                <ComboBox fx:id="comboProbWork" layoutX="171.0" layoutY="315.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <Integer fx:value="10" />
@@ -99,7 +99,7 @@
                     </items>
                     <tooltip><Tooltip text="Задайте вероятность появления рабочих муравьев" /></tooltip>
                 </ComboBox>
-                <ComboBox fx:id="comboProbWar" layoutX="174.0" layoutY="438.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
+                <ComboBox fx:id="comboProbWar" layoutX="171.0" layoutY="471.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <Integer fx:value="10" />
@@ -115,23 +115,40 @@
                     </items>
                     <tooltip><Tooltip text="Задайте вероятность появления муравьев воинов" /></tooltip>
                 </ComboBox>
-                <TextField fx:id="timeTextWork" layoutX="174.0" layoutY="332.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
-                <TextField fx:id="timeTextWar" layoutX="174.0" layoutY="479.0" prefHeight="26.0" prefWidth="75.0" promptText="5" />
+                <TextField fx:id="timeTextWork" layoutX="171.0" layoutY="356.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
+                <TextField fx:id="timeTextWar" layoutX="171.0" layoutY="512.0" prefHeight="26.0" prefWidth="75.0" promptText="5" />
+            <Text fill="#f5f4f4" layoutX="57.0" layoutY="414.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time of life (sec):">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <TextField fx:id="lifeTimeTextWork" layoutX="171.0" layoutY="396.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
+            <Text fill="#f5f4f4" layoutX="57.0" layoutY="569.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time of life (sec):">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
+            <TextField fx:id="lifeTimeTextWar" layoutX="171.0" layoutY="551.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
+            <Button layoutX="48.0" layoutY="131.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="191.0" text="Current objects" textOverrun="WORD_ELLIPSIS">
+               <font>
+                  <Font name="Verdana Bold" size="14.0" />
+               </font>
+            </Button>
             </children>
         </AnchorPane>
         <MenuBar prefHeight="26.0" prefWidth="807.0">
             <menus>
                 <Menu mnemonicParsing="false" text="Menu">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Start" onAction="#handleStart"/>
-                        <MenuItem mnemonicParsing="false" text="Stop" onAction="#handleStop"/>
+                        <MenuItem mnemonicParsing="false" onAction="#handleStart" text="Start" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleStop" text="Stop" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="View">
                     <items>
-                        <CheckMenuItem fx:id="showSummaryMenuItem" mnemonicParsing="false" text="Show Summary" onAction="#handleShowSummaryAction"/>
-                        <RadioMenuItem mnemonicParsing="false" fx:id="showTimeMenuItem" text="Show Time" onAction="#handleShowInformationAction" />
-                        <RadioMenuItem mnemonicParsing="false" fx:id="hideTimeMenuItem" text="Hide Time" onAction="#handleHideInformationAction" />
+                        <CheckMenuItem fx:id="showSummaryMenuItem" mnemonicParsing="false" onAction="#handleShowSummaryAction" text="Show Summary" />
+                        <RadioMenuItem fx:id="showTimeMenuItem" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Show Time" />
+                        <RadioMenuItem fx:id="hideTimeMenuItem" mnemonicParsing="false" onAction="#handleHideInformationAction" text="Hide Time" />
                     </items>
                 </Menu>
             </menus>

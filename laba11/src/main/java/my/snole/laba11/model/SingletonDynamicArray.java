@@ -1,17 +1,20 @@
 package my.snole.laba11.model;
 
+import javafx.application.Platform;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import my.snole.laba11.model.Ant.Ant;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SingletonDynamicArray {
-    private static List<Ant> elements = new ArrayList<>();;
+
+    private static final Vector<Ant> elements = new Vector<>();
+    private static final HashSet<Integer> ids = new HashSet<>();
+    private static final TreeMap<Integer, Long> birthTimes = new TreeMap<>();
     private static SingletonDynamicArray instance = null;
     private SingletonDynamicArray() {
     }
-
-
 
     public static SingletonDynamicArray getInstance() {
         if(instance==null) {
@@ -20,15 +23,40 @@ public class SingletonDynamicArray {
         return instance;
     }
 
-    public static List<Ant> getElements() {
-        return elements;
+public void addElement(Ant element, long birthTime) {
+    int id = generateUniqueId();
+    element.setId(id);
+    elements.add(element);
+    ids.add(id);
+    birthTimes.put(id, birthTime);
+}
+
+    public void clear() {
+        elements.clear();
+        ids.clear();
+        birthTimes.clear();
     }
 
-    public static void addElement(Ant element) {
-        elements.add(element);
+    public int generateUniqueId() {
+        Random rand = new Random();
+        int id = rand.nextInt(Integer.MAX_VALUE);
+        while (ids.contains(id)) {
+            id = rand.nextInt(Integer.MAX_VALUE);
+        }
+        return id;
     }
-    public static void clear(){
-        elements.clear();
+
+    public void removeExpiredElements(long currentTime, AnchorPane scene) {
+        Iterator<Ant> iterator = elements.iterator();
+        while (iterator.hasNext()) {
+            Ant ant = iterator.next();
+            if ((currentTime - ant.getBirthTime()) >= ant.getLifetime()) {
+                if (ant.getImageView() != null) {
+                    Platform.runLater(() -> scene.getChildren().remove(ant.getImageView()));
+                }
+                iterator.remove();
+            }
+        }
     }
 }
 

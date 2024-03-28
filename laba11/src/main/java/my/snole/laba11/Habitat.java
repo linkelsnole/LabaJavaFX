@@ -1,5 +1,6 @@
 package my.snole.laba11;
 
+import javafx.application.Platform;
 import my.snole.laba11.model.Point;
 import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.model.Ant.Ant;
@@ -8,6 +9,8 @@ import my.snole.laba11.model.Ant.WorkerAnt;
 import my.snole.laba11.service.UIService;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.image.ImageView;
+
+import java.util.Iterator;
 
 
 public class Habitat  {
@@ -20,7 +23,7 @@ public class Habitat  {
     public static long stoptime = 0;
     public static boolean isSimulationStopped = false;
     public static boolean simulationActive;
-    private SingletonDynamicArray list;
+    public static SingletonDynamicArray list;
     private final UIService service = new UIService();
     private AnchorPane scene;
     private HabitatListener listener;
@@ -42,14 +45,20 @@ public class Habitat  {
         this.scene = scene;
     }
 
-    public void update(long time, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2) {
+    public void update(long time, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2, long workLifeTime, long warLifeTime) {
         if (!simulationActive) {
             return;
         }
+        long currentTime = System.currentTimeMillis();
+
+//        list.removeExpiredElements(currentTime, scene);
 
         if (time % workerAntN1 == 0 && service.checkProbability(workerAntP1)) {
             WorkerAnt workerAnt = new WorkerAnt();
-            list.addElement(workerAnt);
+            workerAnt.setId(list.generateUniqueId());
+            workerAnt.setBirthTimeWork(currentTime - startTime);
+            workerAnt.setLifeTimeWork(workLifeTime);
+            SingletonDynamicArray.getInstance().addElement(workerAnt, workerAnt.getBirthTime());
             setAnt(workerAnt);
             System.out.println("workerAnt");
             workerAntcount++;
@@ -57,18 +66,25 @@ public class Habitat  {
 
         if (time % warriorAntN2 == 0 && service.checkProbability(warriorAntP2)) {
             WarriorAnt warriorAnt = new WarriorAnt();
-            list.addElement(warriorAnt);
+            warriorAnt.setId(list.generateUniqueId());
+            warriorAnt.setBirthTimeWar(currentTime - startTime);
+            warriorAnt.setLifeTimeWar(warLifeTime);
+            SingletonDynamicArray.getInstance().addElement(warriorAnt, warriorAnt.getBirthTime());
             setAnt(warriorAnt);
             System.out.println("warAnt");
             warriorAntcount++;
         }
     }
+
+
     private void setAnt(Ant ant) {
         Point point = service.generateRandomPoint();
         ImageView imageView = new ImageView(ant.getImage());
         imageView.setX(point.getX());
         imageView.setY(point.getY());
         imageView.setVisible(true);
+        scene.getChildren().add(imageView);
+        ant.setImageView(imageView);
         if (listener != null) {
             listener.onAntAdded(imageView);
         }

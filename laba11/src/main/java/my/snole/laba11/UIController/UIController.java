@@ -21,7 +21,6 @@ import java.util.*;
 
 
 public class UIController {
-    private SingletonDynamicArray list;
     private final Popup popup = new Popup();
     private final Popup summaryPopup = new Popup();
     private final UIService service = new UIService();
@@ -54,20 +53,24 @@ public class UIController {
     private CheckMenuItem showSummaryMenuItem;
     Timer timer = new Timer();
     TimerTask task;
+    @FXML
+    private TextField lifeTimeTextWork;
+    @FXML
+    private TextField lifeTimeTextWar;
+
 
     private TimerTask createTimerTask() {
         float workerAntP1 = getProbability(comboProbWork, 40);
         float warriorAntP2 = getProbability(comboProbWar, 30);
         int workerAntN1 = parseInputOrUseDefault(timeTextWork, 3);
         int warriorAntN2 = parseInputOrUseDefault(timeTextWar, 5);
-
-        int finalWorkerAntN = workerAntN1;
-        int finalWarriorAntN = warriorAntN2;
+        long workLifeTime = parseInputOrUseDefault(lifeTimeTextWork, 10);
+        long warLifeTime = parseInputOrUseDefault(lifeTimeTextWar, 12);
         return new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    habitat.update(System.currentTimeMillis(), finalWorkerAntN, finalWarriorAntN, workerAntP1, warriorAntP2);
+                    habitat.update(System.currentTimeMillis(), workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
                     if (popup.isShowing()) {
                         updateTimeLabel();
                     }
@@ -78,7 +81,7 @@ public class UIController {
     @FXML
     private void initialize() {
         habitat = new Habitat(scene);
-        habitat.setHabitatListener(imageView -> scene.getChildren().add(imageView));
+//        habitat.setHabitatListener(imageView -> scene.getChildren().add(imageView));
         habitat.setSimulationStateListener(new Habitat.SimulationStateListener() {
             @Override
             public void onSimulationStarted() {
@@ -107,6 +110,12 @@ public class UIController {
                 });
             }
         });
+        lifeTimeTextWork.setText("3");
+        lifeTimeTextWar.setText("5");
+        timeTextWork.setText("3");
+        timeTextWar.setText("3");
+        comboProbWork.setValue(50);
+        comboProbWar.setValue(50);
         initializeMenuBindings();
     }
 
@@ -200,33 +209,6 @@ public class UIController {
         event.consume();
     }
 
-//    public void run(KeyEvent event) {//сделать switch
-//        if (event.getCode() == KeyCode.B) {
-//            System.out.println("B key pressed");
-//            habitat.startSimulation();
-//        } else if (event.getCode() == KeyCode.E) {
-//            if (!Habitat.eKeyPressed) {
-//                habitat.stopSimulation();
-//                showSummaryPopup();
-//            }
-//            System.out.println("E key pressed. Task cancelled");
-//        } else if (event.getCode() == KeyCode.T) {
-//            if (!summaryPopup.isShowing()) {
-//                if (!popup.isShowing()) {
-//                    updateTimeLabel();
-//                    showTimePopup();
-//                } else {
-//                    popup.hide();
-//                }
-//            }
-//            timer.purge();
-//            System.out.println("T pressed. Popup toggled.");
-//        }
-//        event.consume();
-//    }
-
-
-
     @FXML
     private void handleStart() {
         habitat.startSimulation();
@@ -297,7 +279,7 @@ public class UIController {
 
 
     private void clearListAndTask() {
-        list.clear();
+        Habitat.list.clear();
         if (task != null) {
             task.cancel();
             task = null;
