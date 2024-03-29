@@ -7,16 +7,7 @@ import java.io.InputStream;
 
 public class WarriorAnt extends Ant {
     private static Image image;
-    public void setBirthTimeWar(long birthTimeWar) {
-        this.birthTime = birthTimeWar;
-    }
 
-    public void setLifeTimeWar(long lifeTimeWar) {
-        this.lifetime = lifeTimeWar;
-    }
-
-    public long birthTime;
-    public long lifetime;
     public WarriorAnt() {
         if (image == null) {
             InputStream stream = getClass().getResourceAsStream("/image/war.png");

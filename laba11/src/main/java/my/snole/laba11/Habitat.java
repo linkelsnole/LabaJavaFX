@@ -51,13 +51,13 @@ public class Habitat  {
         }
         long currentTime = System.currentTimeMillis();
 
-//        list.removeExpiredElements(currentTime, scene);
+        list.removeExpiredElements(currentTime, scene);
 
         if (time % workerAntN1 == 0 && service.checkProbability(workerAntP1)) {
             WorkerAnt workerAnt = new WorkerAnt();
             workerAnt.setId(list.generateUniqueId());
-            workerAnt.setBirthTimeWork(currentTime - startTime);
-            workerAnt.setLifeTimeWork(workLifeTime);
+            workerAnt.setBirthTime(currentTime);
+            workerAnt.setLifetime(workLifeTime);
             SingletonDynamicArray.getInstance().addElement(workerAnt, workerAnt.getBirthTime());
             setAnt(workerAnt);
             System.out.println("workerAnt");
@@ -67,8 +67,8 @@ public class Habitat  {
         if (time % warriorAntN2 == 0 && service.checkProbability(warriorAntP2)) {
             WarriorAnt warriorAnt = new WarriorAnt();
             warriorAnt.setId(list.generateUniqueId());
-            warriorAnt.setBirthTimeWar(currentTime - startTime);
-            warriorAnt.setLifeTimeWar(warLifeTime);
+            warriorAnt.setBirthTime(currentTime);
+            warriorAnt.setLifetime(warLifeTime);
             SingletonDynamicArray.getInstance().addElement(warriorAnt, warriorAnt.getBirthTime());
             setAnt(warriorAnt);
             System.out.println("warAnt");

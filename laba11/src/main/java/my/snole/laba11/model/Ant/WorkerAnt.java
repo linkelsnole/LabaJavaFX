@@ -5,17 +5,6 @@ import javafx.scene.image.Image;
 import java.io.InputStream;
 
 public class WorkerAnt extends Ant {
-    public void setBirthTimeWork(long birthTimeWork) {
-        this.birthTime = birthTimeWork;
-    }
-
-    public void setLifeTimeWork(long lifeTimeWork) {
-        this.lifetime = lifeTimeWork;
-    }
-
-    public long birthTime;
-    public long lifetime;
-
     public WorkerAnt() {
         if (image == null) {
             InputStream stream = getClass().getResourceAsStream("/image/worker.png");

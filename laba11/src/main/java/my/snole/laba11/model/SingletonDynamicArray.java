@@ -50,11 +50,12 @@ public void addElement(Ant element, long birthTime) {
         Iterator<Ant> iterator = elements.iterator();
         while (iterator.hasNext()) {
             Ant ant = iterator.next();
-            if ((currentTime - ant.getBirthTime()) >= ant.getLifetime()) {
+            if ((currentTime - ant.getBirthTime()) >= ant.getLifetime() * 1000) {
                 if (ant.getImageView() != null) {
                     Platform.runLater(() -> scene.getChildren().remove(ant.getImageView()));
                 }
                 iterator.remove();
+                System.out.println("Сработало удаление для муравья с ID: " + ant.getId());
             }
         }
     }

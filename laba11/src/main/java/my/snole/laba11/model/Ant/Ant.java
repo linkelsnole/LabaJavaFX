@@ -8,7 +8,12 @@ public abstract class Ant implements IBehaviour {
     private long birthTime;
     private long lifetime;
     private int id;
-     protected Image image;
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    protected Image image;
 
 
     // Геттеры и сеттеры
