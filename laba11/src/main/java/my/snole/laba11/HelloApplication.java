@@ -11,8 +11,20 @@ import java.io.IOException;
 
 
 public class HelloApplication extends Application {
+    public static HelloApplication instance;
+    public AliveAntsDialog aliveAntsDialog;
+
+    private Stage primaryStage;
+    private Stage stage;
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
     @Override
     public void start(Stage stage) throws IOException {
+        this.primaryStage = primaryStage;
+        instance = this;
+        this.stage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("habitat.fxml"));
         stage.setResizable(false);
         Scene scene = new Scene(fxmlLoader.load(), 1100, 640);
@@ -27,6 +39,10 @@ public class HelloApplication extends Application {
 
         stage.setScene(scene);
         stage.show();
+
+    }
+    public Stage getStage() {
+        return stage;
     }
 
     public static void main(String[] args) {

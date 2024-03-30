@@ -59,5 +59,15 @@ public void addElement(Ant element, long birthTime) {
             }
         }
     }
+
+    public TreeMap<Integer, Long> getBirthTimes() {
+        return new TreeMap<>(birthTimes);
+    }
+
+    public Vector<Ant> getElements() {
+        return new Vector<>(elements);
+    }
+
+
 }
 

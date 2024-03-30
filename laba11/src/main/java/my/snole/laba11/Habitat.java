@@ -49,6 +49,7 @@ public class Habitat  {
         if (!simulationActive) {
             return;
         }
+
         long currentTime = System.currentTimeMillis();
 
         list.removeExpiredElements(currentTime, scene);
@@ -74,6 +75,7 @@ public class Habitat  {
             System.out.println("warAnt");
             warriorAntcount++;
         }
+
     }
 
 

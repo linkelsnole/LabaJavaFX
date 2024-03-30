@@ -1,12 +1,20 @@
 package my.snole.laba11.UIController;
 
+
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -14,7 +22,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Popup;
+import javafx.stage.Stage;
+import my.snole.laba11.AliveAntsDialog;
 import my.snole.laba11.Habitat;
+import my.snole.laba11.HelloApplication;
 import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.service.UIService;
 import java.util.*;
@@ -363,5 +374,16 @@ public class UIController {
     private void handleShowSummaryAction() {
     }
 
+    @FXML
+    private Button curObjBtn;
+    AliveAntsDialog aliveAntsDialog = new AliveAntsDialog();
+    @FXML
+    private void showCurrentObjectsDialog(MouseEvent event) {
+        Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        if (HelloApplication.instance.aliveAntsDialog == null) {
+            HelloApplication.instance.aliveAntsDialog = new AliveAntsDialog(primaryStage);
+        }
 
+        HelloApplication.instance.aliveAntsDialog.showAndWait();
+    }
 }
