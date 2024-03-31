@@ -3,12 +3,11 @@
 <?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.TableColumn?>
-<DialogPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="my.snole.laba11.AliveAntsDialog">
+
+<DialogPane fx:id="dialogPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.AliveAntsDialog">
     <content>
         <VBox prefHeight="400.0" prefWidth="600.0">
-            <TableView fx:id="currentObjectsTable" VBox.vgrow="ALWAYS"/>
+            <TableView fx:id="currentObjectsTable" VBox.vgrow="ALWAYS" />
         </VBox>
     </content>
 </DialogPane>

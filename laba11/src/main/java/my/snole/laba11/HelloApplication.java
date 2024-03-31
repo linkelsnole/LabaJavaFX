@@ -22,7 +22,7 @@ public class HelloApplication extends Application {
     }
     @Override
     public void start(Stage stage) throws IOException {
-        this.primaryStage = primaryStage;
+        this.primaryStage = stage;
         instance = this;
         this.stage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("habitat.fxml"));

@@ -92,7 +92,6 @@ public class UIController {
     @FXML
     private void initialize() {
         habitat = new Habitat(scene);
-//        habitat.setHabitatListener(imageView -> scene.getChildren().add(imageView));
         habitat.setSimulationStateListener(new Habitat.SimulationStateListener() {
             @Override
             public void onSimulationStarted() {
@@ -376,14 +375,12 @@ public class UIController {
 
     @FXML
     private Button curObjBtn;
-    AliveAntsDialog aliveAntsDialog = new AliveAntsDialog();
     @FXML
     private void showCurrentObjectsDialog(MouseEvent event) {
         Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         if (HelloApplication.instance.aliveAntsDialog == null) {
             HelloApplication.instance.aliveAntsDialog = new AliveAntsDialog(primaryStage);
         }
-
-        HelloApplication.instance.aliveAntsDialog.showAndWait();
+        HelloApplication.instance.aliveAntsDialog.show();
     }
 }
