@@ -9,17 +9,7 @@ public abstract class Ant implements IBehaviour {
     private long lifetime;
     private int id;
 
-    public void setImage(Image image) {
-        this.image = image;
-    }
 
-    protected Image image;
-
-
-    // Геттеры и сеттеры
-    public Image getImage () {
-        return image;
-    }
     public int getId() {
         return id;
     }
@@ -44,6 +34,16 @@ public abstract class Ant implements IBehaviour {
 
     public void setImageView(ImageView imageView) {
         this.imageView = imageView;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    protected Image image;
+
+    public Image getImage () {
+        return image;
     }
 
     private ImageView imageView;

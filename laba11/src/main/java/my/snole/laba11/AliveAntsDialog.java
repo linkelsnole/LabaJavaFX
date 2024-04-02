@@ -21,10 +21,7 @@ import javafx.util.Duration;
 import my.snole.laba11.model.Ant.Ant;
 import my.snole.laba11.model.SingletonDynamicArray;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+
 
 import java.io.IOException;
 
@@ -37,7 +34,6 @@ public class AliveAntsDialog extends Dialog<Void> {
 
     public AliveAntsDialog() {
         super();
-
 
     }
 
@@ -92,6 +88,7 @@ public class AliveAntsDialog extends Dialog<Void> {
             currentObjectsTable.setItems(ants);
         }
     }
+
     public void startAutoUpdate() {
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> Platform.runLater(this::updateTable)));
         timeline.setCycleCount(Animation.INDEFINITE);
@@ -103,13 +100,6 @@ public class AliveAntsDialog extends Dialog<Void> {
             timeline.stop();
         }
     }
-
-
-
-
-
-
-
 
 
 
