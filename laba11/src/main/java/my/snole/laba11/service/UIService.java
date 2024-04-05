@@ -25,8 +25,8 @@ public class UIService {
     }
 
     public Point generateRandomPoint() {
-        int x = (int) (Math.random() * 600);
-        int y = (int) (Math.random() * 550);
+        int x = (int) (Math.random() * 700);
+        int y = (int) (Math.random() * 500);
         return new Point(x, y);
     }
 }
