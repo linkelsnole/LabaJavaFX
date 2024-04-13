@@ -12,131 +12,22 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" style="-fx-background-color: #FFFAFA;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.UIController.UIController">
+<AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.UIController.UIController">
     <children>
         <Label fx:id="label" />
-        <AnchorPane layoutX="807.0" prefHeight="647.0" prefWidth="293.0" style="-fx-background-color: #696969;">
-            <children>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="163.0" layoutX="36.0" layoutY="429.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="163.0" layoutX="36.0" layoutY="271.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
-                <Button fx:id="startButton" disable="false" layoutX="48.0" layoutY="26.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="33.0" prefWidth="191.0" text="Start">
-                    <effect>
-                        <Blend />
-                    </effect>
-                    <font>
-                        <Font name="Verdana" size="16.0" />
-                    </font>
-                    <tooltip><Tooltip text="Начать симуляцию" /></tooltip>
-                </Button>
-                <Button fx:id="stopButton" disable="true" layoutX="48.0" layoutY="77.0" mnemonicParsing="false" onAction="#handleStop" prefHeight="33.0" prefWidth="191.0" text="Stop">
-                    <effect>
-                        <Blend />
-                    </effect>
-                    <font>
-                        <Font name="Verdana" size="16.0" />
-                    </font>
-                    <tooltip><Tooltip text="Остановить симуляцию" /></tooltip>
-                </Button>
-                <Text layoutX="98.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" />
-                <CheckBox fx:id="showWindow" layoutX="48.0" layoutY="183.0" mnemonicParsing="false" text="Show information window" textFill="WHITE" />
-                <RadioButton fx:id="showInformationButton" layoutX="48.0" layoutY="210.0" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Show simulation time" textFill="WHITE">
-                    <toggleGroup>
-                        <ToggleGroup fx:id="infoToggleGroup" />
-                    </toggleGroup></RadioButton>
-                <RadioButton fx:id="hideInformationButton" layoutX="48.0" layoutY="236.0" mnemonicParsing="false" onAction="#handleHideInformationAction" selected="true" text="Hide simulation time" textFill="WHITE" toggleGroup="$infoToggleGroup" />
-                <Text fill="WHITE" layoutX="104.0" layoutY="300.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WorkerAnt">
-                    <font>
-                        <Font name="Comic Sans MS" size="16.0" />
-                    </font>
-                </Text>
-                <Text fill="#fffdfd" layoutX="104.0" layoutY="458.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WarriorAnt">
-                    <font>
-                        <Font name="Comic Sans MS" size="16.0" />
-                    </font>
-                </Text>
-                <Text fill="#f5f4f4" layoutX="60.0" layoutY="333.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Probability (%):">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Text>
-                <Text fill="#f5f4f4" layoutX="59.0" layoutY="374.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (sec):">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Text>
-                <Text fill="#fffdfd" layoutX="60.0" layoutY="489.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Probability (%):">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Text>
-                <Text fill="#fffdfd" layoutX="59.0" layoutY="530.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (sec):">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Text>
-                <ComboBox fx:id="comboProbWork" layoutX="171.0" layoutY="315.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <Integer fx:value="10" />
-                            <Integer fx:value="20" />
-                            <Integer fx:value="30" />
-                            <Integer fx:value="40" />
-                            <Integer fx:value="50" />
-                            <Integer fx:value="60" />
-                            <Integer fx:value="70" />
-                            <Integer fx:value="80" />
-                            <Integer fx:value="90" />
-                        </FXCollections>
-                    </items>
-                    <tooltip><Tooltip text="Задайте вероятность появления рабочих муравьев" /></tooltip>
-                </ComboBox>
-                <ComboBox fx:id="comboProbWar" layoutX="171.0" layoutY="471.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <Integer fx:value="10" />
-                            <Integer fx:value="20" />
-                            <Integer fx:value="30" />
-                            <Integer fx:value="40" />
-                            <Integer fx:value="50" />
-                            <Integer fx:value="60" />
-                            <Integer fx:value="70" />
-                            <Integer fx:value="80" />
-                            <Integer fx:value="90" />
-                        </FXCollections>
-                    </items>
-                    <tooltip><Tooltip text="Задайте вероятность появления муравьев воинов" /></tooltip>
-                </ComboBox>
-                <TextField fx:id="timeTextWork" layoutX="171.0" layoutY="356.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
-                <TextField fx:id="timeTextWar" layoutX="171.0" layoutY="512.0" prefHeight="26.0" prefWidth="75.0" promptText="5" />
-            <Text fill="#f5f4f4" layoutX="57.0" layoutY="414.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time of life (sec):">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Text>
-            <TextField fx:id="lifeTimeTextWork" layoutX="171.0" layoutY="396.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
-            <Text fill="#f5f4f4" layoutX="57.0" layoutY="569.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time of life (sec):">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Text>
-            <TextField fx:id="lifeTimeTextWar" layoutX="171.0" layoutY="551.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
-            <Button fx:id="curObjBtn" onMouseClicked="#showCurrentObjectsDialog" layoutX="48.0" layoutY="131.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="191.0" text="Current objects" textOverrun="WORD_ELLIPSIS">
-               <font>
-                  <Font name="Verdana Bold" size="14.0" />
-               </font>
-            </Button>
-            </children>
-        </AnchorPane>
-        <MenuBar prefHeight="26.0" prefWidth="807.0">
+        <MenuBar prefHeight="32.0" prefWidth="807.0">
             <menus>
                 <Menu mnemonicParsing="false" text="Menu">
                     <items>
@@ -153,6 +44,170 @@
                 </Menu>
             </menus>
         </MenuBar>
+      <TabPane layoutX="807.0" prefHeight="640.0" prefWidth="293.0" style="-fx-background-color: #696969;" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="     Main     ">
+               <content>
+                    <AnchorPane prefHeight="569.0" prefWidth="297.0" style="-fx-background-color: #696969;">
+                        <children>
+                            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="163.0" layoutX="36.0" layoutY="429.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
+                            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="163.0" layoutX="36.0" layoutY="271.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
+                            <Button fx:id="startButton" disable="false" layoutX="48.0" layoutY="26.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="33.0" prefWidth="191.0" text="Start">
+                                <effect>
+                                    <Blend />
+                                </effect>
+                                <font>
+                                    <Font name="Verdana" size="16.0" />
+                                </font>
+                                <tooltip>
+                              <Tooltip text="Начать симуляцию" />
+                           </tooltip>
+                            </Button>
+                            <Button fx:id="stopButton" disable="true" layoutX="48.0" layoutY="77.0" mnemonicParsing="false" onAction="#handleStop" prefHeight="33.0" prefWidth="191.0" text="Stop">
+                                <effect>
+                                    <Blend />
+                                </effect>
+                                <font>
+                                    <Font name="Verdana" size="16.0" />
+                                </font>
+                                <tooltip>
+                              <Tooltip text="Остановить симуляцию" />
+                           </tooltip>
+                            </Button>
+                            <Text layoutX="98.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+                            <CheckBox fx:id="showWindow" layoutX="48.0" layoutY="183.0" mnemonicParsing="false" text="Show information window" textFill="WHITE" />
+                            <RadioButton fx:id="showInformationButton" layoutX="48.0" layoutY="210.0" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Show simulation time" textFill="WHITE">
+                                <toggleGroup>
+                                    <ToggleGroup fx:id="infoToggleGroup" />
+                                </toggleGroup>
+                        </RadioButton>
+                            <RadioButton fx:id="hideInformationButton" layoutX="48.0" layoutY="236.0" mnemonicParsing="false" onAction="#handleHideInformationAction" selected="true" text="Hide simulation time" textFill="WHITE" toggleGroup="$infoToggleGroup" />
+                            <Text fill="WHITE" layoutX="104.0" layoutY="300.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WorkerAnt">
+                                <font>
+                                    <Font name="Comic Sans MS Bold" size="16.0" />
+                                </font>
+                            </Text>
+                            <Text fill="WHITE" layoutX="104.0" layoutY="458.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WarriorAnt">
+                                <font>
+                                    <Font name="Comic Sans MS Bold" size="16.0" />
+                                </font>
+                            </Text>
+                            <Text fill="#f5f4f4" layoutX="60.0" layoutY="333.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Probability (%):">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Text>
+                            <Text fill="#f5f4f4" layoutX="59.0" layoutY="374.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (sec):">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Text>
+                            <Text fill="#fffdfd" layoutX="60.0" layoutY="489.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Probability (%):">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Text>
+                            <Text fill="#fffdfd" layoutX="59.0" layoutY="530.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time (sec):">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Text>
+                            <ComboBox fx:id="comboProbWork" layoutX="171.0" layoutY="315.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <Integer fx:value="10" />
+                                        <Integer fx:value="20" />
+                                        <Integer fx:value="30" />
+                                        <Integer fx:value="40" />
+                                        <Integer fx:value="50" />
+                                        <Integer fx:value="60" />
+                                        <Integer fx:value="70" />
+                                        <Integer fx:value="80" />
+                                        <Integer fx:value="90" />
+                                    </FXCollections>
+                                </items>
+                                <tooltip>
+                              <Tooltip text="Задайте вероятность появления рабочих муравьев" />
+                           </tooltip>
+                            </ComboBox>
+                            <ComboBox fx:id="comboProbWar" layoutX="171.0" layoutY="471.0" prefHeight="26.0" prefWidth="75.0" promptText="--">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <Integer fx:value="10" />
+                                        <Integer fx:value="20" />
+                                        <Integer fx:value="30" />
+                                        <Integer fx:value="40" />
+                                        <Integer fx:value="50" />
+                                        <Integer fx:value="60" />
+                                        <Integer fx:value="70" />
+                                        <Integer fx:value="80" />
+                                        <Integer fx:value="90" />
+                                    </FXCollections>
+                                </items>
+                                <tooltip>
+                              <Tooltip text="Задайте вероятность появления муравьев воинов" />
+                           </tooltip>
+                            </ComboBox>
+                            <TextField fx:id="timeTextWork" layoutX="171.0" layoutY="356.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
+                            <TextField fx:id="timeTextWar" layoutX="171.0" layoutY="512.0" prefHeight="26.0" prefWidth="75.0" promptText="5" />
+                        <Text fill="#f5f4f4" layoutX="57.0" layoutY="414.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time of life (sec):">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="lifeTimeTextWork" layoutX="171.0" layoutY="396.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
+                        <Text fill="#f5f4f4" layoutX="57.0" layoutY="569.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time of life (sec):">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="lifeTimeTextWar" layoutX="171.0" layoutY="551.0" prefHeight="26.0" prefWidth="75.0" promptText="3" />
+                        <Button fx:id="curObjBtn" layoutX="48.0" layoutY="131.0" mnemonicParsing="false" onMouseClicked="#showCurrentObjectsDialog" prefHeight="33.0" prefWidth="191.0" text="Current objects" textOverrun="WORD_ELLIPSIS">
+                           <font>
+                              <Font name="Verdana Bold" size="14.0" />
+                           </font>
+                        </Button>
+                        </children>
+                    </AnchorPane>
+               </content>
+          </Tab>
+          <Tab text="       AI       ">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="112.0" layoutX="36.0" layoutY="142.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#7c8083" height="104.0" layoutX="36.0" layoutY="46.0" stroke="#ebe3e3" strokeType="INSIDE" strokeWidth="2.0" width="222.0" />
+                        <Text fill="WHITE" layoutX="104.0" layoutY="70.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WorkerAnt">
+                           <font>
+                              <Font name="Comic Sans MS Bold" size="16.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" layoutX="103.0" layoutY="174.0" strokeType="OUTSIDE" strokeWidth="0.0" text="WarriorAnt">
+                           <font>
+                              <Font name="Comic Sans MS Bold" size="16.0" />
+                           </font>
+                        </Text>
+                        <CheckBox fx:id="workerAI" layoutX="70.0" layoutY="84.0" mnemonicParsing="false" text="AI On" textFill="WHITE" />
+                        <Text fill="#f5f4f4" layoutX="73.0" layoutY="127.0" strokeType="OUTSIDE" strokeWidth="0.0" text="AI priority:" wrappingWidth="59.4609375">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Text>
+                        <ComboBox fx:id="workerAntPriorityComboBox" layoutX="152.0" layoutY="109.0" prefHeight="26.0" prefWidth="75.0" />
+                        <CheckBox fx:id="warriorAI" layoutX="68.0" layoutY="186.0" mnemonicParsing="false" text="AI On" textFill="WHITE" />
+                        <Text fill="#f5f4f4" layoutX="71.0" layoutY="229.0" strokeType="OUTSIDE" strokeWidth="0.0" text="AI priority:" wrappingWidth="59.4609375">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Text>
+                        <ComboBox fx:id="warriorAntPriorityComboBox" layoutX="150.0" layoutY="211.0" prefHeight="26.0" prefWidth="75.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+      <Pane fx:id="scenePane" layoutY="31.0" prefHeight="609.0" prefWidth="807.0" />
 
     </children>
 </AnchorPane>

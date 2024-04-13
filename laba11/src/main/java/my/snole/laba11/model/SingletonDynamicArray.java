@@ -1,9 +1,10 @@
 package my.snole.laba11.model;
 
 import javafx.application.Platform;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import my.snole.laba11.model.Ant.Ant;
+import javafx.scene.layout.Pane;
+import my.snole.laba11.baseAI.BaseAI;
+import my.snole.laba11.model.ant.Ant;
 
 import java.util.*;
 
@@ -29,6 +30,7 @@ public void addElement(Ant element, long birthTime) {
     elements.add(element);
     ids.add(id);
     birthTimes.put(id, birthTime);
+    element.setBirthPosition(element.getImageView().getLayoutX(), element.getImageView().getLayoutY());
 }
 
     public void clear() {
@@ -46,7 +48,7 @@ public void addElement(Ant element, long birthTime) {
         return id;
     }
 
-    public void removeExpiredElements(long currentTime, AnchorPane scene) {
+    public void removeExpiredElements(long currentTime, Pane scene) {
         Iterator<Ant> iterator = elements.iterator();
         while (iterator.hasNext()) {
             Ant ant = iterator.next();

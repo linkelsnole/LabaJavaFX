@@ -1,10 +1,12 @@
-package my.snole.laba11.model.Ant;
+package my.snole.laba11.model.ant;
 
 import javafx.scene.image.ImageView;
-import my.snole.laba11.IBehaviour;
 import javafx.scene.image.Image;
+import my.snole.laba11.model.Point;
 
-public abstract class Ant implements IBehaviour {
+import java.util.concurrent.ForkJoinPool;
+
+public abstract class Ant {
     private long birthTime;
     private long lifetime;
     private int id;
@@ -51,4 +53,23 @@ public abstract class Ant implements IBehaviour {
     public ImageView getImageView() {
         return imageView;
     }
+
+
+    private double birthX;
+    private double birthY;
+
+    public double getBirthX() {
+        return birthX;
+    }
+
+    public double getBirthY() {
+        return birthY;
+    }
+
+    public void setBirthPosition(double x, double y) {
+        this.birthX = x;
+        this.birthY = y;
+    }
+
+
 }

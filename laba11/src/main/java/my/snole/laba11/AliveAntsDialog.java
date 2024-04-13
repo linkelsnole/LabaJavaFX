@@ -18,7 +18,7 @@ import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
-import my.snole.laba11.model.Ant.Ant;
+import my.snole.laba11.model.ant.Ant;
 import my.snole.laba11.model.SingletonDynamicArray;
 
 
@@ -93,6 +93,7 @@ public class AliveAntsDialog extends Dialog<Void> {
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), ev -> Platform.runLater(this::updateTable)));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
+        System.out.println("fdsffdsfsdfsd");
     }
 
     public void stopAutoUpdate() {

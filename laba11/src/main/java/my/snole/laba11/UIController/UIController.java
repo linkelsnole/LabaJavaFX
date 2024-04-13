@@ -2,20 +2,14 @@ package my.snole.laba11.UIController;
 
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -26,7 +20,6 @@ import javafx.stage.Stage;
 import my.snole.laba11.AliveAntsDialog;
 import my.snole.laba11.Habitat;
 import my.snole.laba11.HelloApplication;
-import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.service.UIService;
 import java.util.*;
 
@@ -68,6 +61,27 @@ public class UIController {
     private TextField lifeTimeTextWork;
     @FXML
     private TextField lifeTimeTextWar;
+    @FXML
+    private Button curObjBtn;
+    @FXML
+    private Pane scenePane;//окно где появляются муравьи
+
+    /**
+     * AI и приоритет
+     */
+    @FXML
+    private ComboBox<Integer> workerAntPriorityComboBox;
+    @FXML
+    private ComboBox<Integer> warriorAntPriorityComboBox;
+    @FXML
+    private CheckBox warriorAI;
+    @FXML
+    private CheckBox workerAI;
+
+
+
+
+
 
 
     private TimerTask createTimerTask() {
@@ -77,11 +91,13 @@ public class UIController {
         int warriorAntN2 = parseInputOrUseDefault(timeTextWar, 5);
         long workLifeTime = parseInputOrUseDefault(lifeTimeTextWork, 10);
         long warLifeTime = parseInputOrUseDefault(lifeTimeTextWar, 12);
+        boolean isWorkerAIChecked = workerAI.isSelected();
+        boolean isWarriorAIChecked = warriorAI.isSelected();
         return new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    habitat.update(System.currentTimeMillis(), workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
+                    habitat.update(System.currentTimeMillis(), workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime, isWorkerAIChecked, isWarriorAIChecked);
                     if (popup.isShowing()) {
                         updateTimeLabel();
                     }
@@ -91,7 +107,8 @@ public class UIController {
     }
     @FXML
     private void initialize() {
-        habitat = new Habitat(scene);
+
+        habitat = new Habitat(scenePane);
         habitat.setSimulationStateListener(new Habitat.SimulationStateListener() {
             @Override
             public void onSimulationStarted() {
@@ -127,6 +144,29 @@ public class UIController {
         comboProbWork.setValue(50);
         comboProbWar.setValue(50);
         initializeMenuBindings();
+
+        //инициализация ComboBox для выбора приоритета потоков
+        workerAntPriorityComboBox.getItems().addAll(
+                Thread.MIN_PRIORITY, Thread.NORM_PRIORITY, Thread.MAX_PRIORITY
+        );
+        warriorAntPriorityComboBox.getItems().addAll(
+                Thread.MIN_PRIORITY, Thread.NORM_PRIORITY, Thread.MAX_PRIORITY
+        );
+
+        //слушателт для ComboBox
+        workerAntPriorityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                habitat.changeWorkerAntPriority(newVal);
+            }
+        });
+
+        warriorAntPriorityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                habitat.changeWarriorAntPriority(newVal);
+            }
+        });
+
+
     }
 
 
@@ -327,7 +367,7 @@ public class UIController {
             summaryPopup.hide();
         }
 
-        scene.getChildren().removeIf(node -> node instanceof ImageView);
+        scenePane.getChildren().removeIf(node -> node instanceof ImageView);
     }
 
     private float getProbability(ComboBox<Integer> comboBox, float defaultValue) {
@@ -373,8 +413,7 @@ public class UIController {
     private void handleShowSummaryAction() {
     }
 
-    @FXML
-    private Button curObjBtn;
+
     @FXML
     private void showCurrentObjectsDialog(MouseEvent event) {
         Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -383,4 +422,6 @@ public class UIController {
         }
         HelloApplication.instance.aliveAntsDialog.show();
     }
+
+
 }
