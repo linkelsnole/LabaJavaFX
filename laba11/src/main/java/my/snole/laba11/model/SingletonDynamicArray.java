@@ -24,6 +24,11 @@ public class SingletonDynamicArray {
         return instance;
     }
 
+    public Vector<Ant> getAntsList() {
+        return elements;
+    }
+
+
 public void addElement(Ant element, long birthTime) {
     int id = generateUniqueId();
     element.setId(id);
@@ -31,12 +36,14 @@ public void addElement(Ant element, long birthTime) {
     ids.add(id);
     birthTimes.put(id, birthTime);
     element.setBirthPosition(element.getImageView().getLayoutX(), element.getImageView().getLayoutY());
+
 }
 
     public void clear() {
         elements.clear();
         ids.clear();
         birthTimes.clear();
+
     }
 
     public int generateUniqueId() {
@@ -57,10 +64,10 @@ public void addElement(Ant element, long birthTime) {
                     Platform.runLater(() -> scene.getChildren().remove(ant.getImageView()));
                 }
                 iterator.remove();
-                System.out.println("Сработало удаление для муравья с ID: " + ant.getId());
             }
         }
     }
+
 
     public TreeMap<Integer, Long> getBirthTimes() {
         return new TreeMap<>(birthTimes);
@@ -69,6 +76,10 @@ public void addElement(Ant element, long birthTime) {
     public Vector<Ant> getElements() {
         return new Vector<>(elements);
     }
+
+
+
+
 
 
 }

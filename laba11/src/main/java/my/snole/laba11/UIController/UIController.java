@@ -20,8 +20,12 @@ import javafx.stage.Stage;
 import my.snole.laba11.AliveAntsDialog;
 import my.snole.laba11.Habitat;
 import my.snole.laba11.HelloApplication;
+import my.snole.laba11.baseAI.BaseAI;
+import my.snole.laba11.model.ant.AI.WarriorAntAI;
+import my.snole.laba11.model.ant.AI.WorkerAntAI;
 import my.snole.laba11.service.UIService;
 import java.util.*;
+import java.util.function.Consumer;
 
 
 public class UIController {
@@ -74,9 +78,10 @@ public class UIController {
     @FXML
     private ComboBox<Integer> warriorAntPriorityComboBox;
     @FXML
-    private CheckBox warriorAI;
+    public  CheckBox warriorAI;
     @FXML
-    private CheckBox workerAI;
+    public  CheckBox workerAI;
+
 
 
 
@@ -85,18 +90,19 @@ public class UIController {
 
 
     private TimerTask createTimerTask() {
-        float workerAntP1 = getProbability(comboProbWork, 40);
-        float warriorAntP2 = getProbability(comboProbWar, 30);
-        int workerAntN1 = parseInputOrUseDefault(timeTextWork, 3);
-        int warriorAntN2 = parseInputOrUseDefault(timeTextWar, 5);
+        float workerAntP1 = getProbability(comboProbWork, 50);
+        float warriorAntP2 = getProbability(comboProbWar, 50);
+        int workerAntN1 = parseInputOrUseDefault(timeTextWork, 2);
+        int warriorAntN2 = parseInputOrUseDefault(timeTextWar, 2);
         long workLifeTime = parseInputOrUseDefault(lifeTimeTextWork, 10);
         long warLifeTime = parseInputOrUseDefault(lifeTimeTextWar, 12);
-        boolean isWorkerAIChecked = workerAI.isSelected();
-        boolean isWarriorAIChecked = warriorAI.isSelected();
+
         return new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(() -> {
+                    boolean isWorkerAIChecked = workerAI.isSelected();
+                    boolean isWarriorAIChecked = warriorAI.isSelected();
                     habitat.update(System.currentTimeMillis(), workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime, isWorkerAIChecked, isWarriorAIChecked);
                     if (popup.isShowing()) {
                         updateTimeLabel();
@@ -113,7 +119,6 @@ public class UIController {
             @Override
             public void onSimulationStarted() {
                 Platform.runLater(() -> {
-                    clearScene();
                     hidePopups();
                     scheduleTask();
                     showInformationButton.setSelected(false);
@@ -125,6 +130,7 @@ public class UIController {
             @Override
             public void onSimulationStopped() {
                 Platform.runLater(() -> {
+                    clearScene();
                     if (showWindow.isSelected() || showSummaryMenuItem.isSelected()) {
                         showStopSimulationDialog();
                     } else {
@@ -137,35 +143,18 @@ public class UIController {
                 });
             }
         });
-        lifeTimeTextWork.setText("3");
-        lifeTimeTextWar.setText("5");
-        timeTextWork.setText("3");
-        timeTextWar.setText("3");
-        comboProbWork.setValue(50);
-        comboProbWar.setValue(50);
+
         initializeMenuBindings();
+        setupPriorityComboBox(workerAntPriorityComboBox, newVal -> habitat.changeWorkerAntPriority(newVal));
+        setupPriorityComboBox(warriorAntPriorityComboBox, newVal -> habitat.changeWarriorAntPriority(newVal));
 
-        //инициализация ComboBox для выбора приоритета потоков
-        workerAntPriorityComboBox.getItems().addAll(
-                Thread.MIN_PRIORITY, Thread.NORM_PRIORITY, Thread.MAX_PRIORITY
-        );
-        warriorAntPriorityComboBox.getItems().addAll(
-                Thread.MIN_PRIORITY, Thread.NORM_PRIORITY, Thread.MAX_PRIORITY
-        );
-
-        //слушателт для ComboBox
-        workerAntPriorityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                habitat.changeWorkerAntPriority(newVal);
-            }
+        workerAI.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            habitat.TWorkerAntAI(newValue);
         });
 
-        warriorAntPriorityComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                habitat.changeWarriorAntPriority(newVal);
-            }
+        warriorAI.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            habitat.TWarriorAntAI(newValue);
         });
-
 
     }
 
@@ -395,6 +384,14 @@ public class UIController {
         showSummaryMenuItem.selectedProperty().bindBidirectional(showWindow.selectedProperty());
         showTimeMenuItem.selectedProperty().bindBidirectional(showInformationButton.selectedProperty());
         hideTimeMenuItem.selectedProperty().bindBidirectional(hideInformationButton.selectedProperty());
+        lifeTimeTextWork.setText("10");
+        lifeTimeTextWar.setText("10");
+        timeTextWork.setText("2");
+        timeTextWar.setText("2");
+        comboProbWork.setValue(90);
+        comboProbWar.setValue(90);
+        workerAntPriorityComboBox.setValue(Thread.NORM_PRIORITY);
+        warriorAntPriorityComboBox.setValue(Thread.NORM_PRIORITY);
     }
 
     private void setButtonsStopped () {
@@ -421,6 +418,17 @@ public class UIController {
             HelloApplication.instance.aliveAntsDialog = new AliveAntsDialog(primaryStage);
         }
         HelloApplication.instance.aliveAntsDialog.show();
+    }
+
+    private void setupPriorityComboBox(ComboBox<Integer> comboBox, Consumer<Integer> changePriorityFunction) {
+        comboBox.getItems().addAll(
+                Thread.MIN_PRIORITY, Thread.NORM_PRIORITY, Thread.MAX_PRIORITY
+        );
+        comboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                changePriorityFunction.accept(newVal);
+            }
+        });
     }
 
 

@@ -2,6 +2,7 @@ package my.snole.laba11.model.ant;
 
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
+import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.Point;
 
 import java.util.concurrent.ForkJoinPool;
@@ -71,5 +72,14 @@ public abstract class Ant {
         this.birthY = y;
     }
 
+    //для 4
+    private BaseAI ai;
+    public void setAI(BaseAI ai) {
+        this.ai = ai;
+    }
+
+    public BaseAI getAI() {
+        return ai;
+    }
 
 }

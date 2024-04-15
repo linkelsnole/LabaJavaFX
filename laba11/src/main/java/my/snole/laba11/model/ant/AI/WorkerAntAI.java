@@ -9,12 +9,12 @@ import my.snole.laba11.model.Point;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 public class WorkerAntAI extends BaseAI {
-    private Ant ant;
+    private final Ant ant;
     private final double fieldWidth;
     private boolean goingToDestination = true;
     private final double fieldHeight;
-    private double speed = 15.0;
 
 
     public WorkerAntAI(Ant ant, double fieldWidth, double fieldHeight) {
@@ -24,63 +24,50 @@ public class WorkerAntAI extends BaseAI {
     }
 
 
-    @Override
-    public void run() {
-        super.run();
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (isActive) update();
-            }
-        }, 0, 100);
-    }
-
-
-    private synchronized void update() {
-        // Выход, если поток не активен
-        if (!isActive) return;
-
-        // Получение текущих координат ImageView
+    protected void update() {
+        if (!isActive) {
+            return;
+        }
         ImageView imageView = ant.getImageView();
-        final double currentX = imageView.getLayoutX();
-        final double currentY = imageView.getLayoutY();
+        Point currentPosition = new Point(imageView.getLayoutX(), imageView.getLayoutY());
 
-        // Определение целевых координат
-        final double targetX = goingToDestination ? 0 : ant.getBirthX();
-        final double targetY = goingToDestination ? 0 : ant.getBirthY();
+        Point targetPosition = goingToDestination ? new Point(0, 0) : new Point(ant.getBirthX(), ant.getBirthY());
 
-        // Расчет направления движения к цели
-        double dx = targetX - currentX;
-        double dy = targetY - currentY;
-        double distance = Math.sqrt(dx * dx + dy * dy);
-
-        // Нормализация вектора движения, если расстояние больше нуля
-        if (distance > 0) {
-            dx /= distance;
-            dy /= distance;
+        Point direction = targetPosition.subtract(currentPosition);
+        double distance = direction.getMagnitude();
+        if (distance == 0) {
+            return;
         }
 
-        // Расчет новых координат с учетом скорости
-        final double newX = currentX + dx * speed;
-        final double newY = currentY + dy * speed;
+        direction = direction.normalize();
+        double speed = 5.0;
+        Point moveStep = direction.scale(speed);
 
-        // Обновление координат ImageView на потоке JavaFX
+        Point newPosition = currentPosition.add(moveStep);
+
         Platform.runLater(() -> {
-            imageView.setLayoutX(newX);
-            imageView.setLayoutY(newY);
+            imageView.setLayoutX(newPosition.getX());
+            imageView.setLayoutY(newPosition.getY());
         });
 
-        // Проверка на достижение цели и смена направления при необходимости
-        if (Math.hypot(newX - targetX, newY - targetY) < speed) {
+        if (Math.hypot(newPosition.getX() - targetPosition.getX(), newPosition.getY() - targetPosition.getY()) < speed) {
             goingToDestination = !goingToDestination;
         }
     }
-
-
-
-
 }
+
+//    @Override
+//    public void run() {
+//        super.run();
+//        timer = new Timer();
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                if (isActive) update();
+//            }
+//        }, 0, 100);
+//    }
+
 
 
 

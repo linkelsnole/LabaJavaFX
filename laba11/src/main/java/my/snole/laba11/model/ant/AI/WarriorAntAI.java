@@ -1,20 +1,16 @@
 package my.snole.laba11.model.ant.AI;
 
 import javafx.application.Platform;
-import javafx.scene.image.ImageView;
 import my.snole.laba11.baseAI.BaseAI;
+import my.snole.laba11.model.Point;
 import my.snole.laba11.model.ant.Ant;
-import my.snole.laba11.model.ant.WarriorAnt;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class WarriorAntAI extends BaseAI {
-    private Ant ant;
+    private final Ant ant;
     private final double radius;
     private double angle = 0.0;
-    private final double speed = 30.0;
     private final double centerX;
     private final double centerY;
 
@@ -25,36 +21,40 @@ public class WarriorAntAI extends BaseAI {
         this.centerY = centerY;
     }
 
-    @Override
-    public void run() {
-        super.run();
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (isActive) update();
-            }
-        }, 0, 100);
-    }
 
-    private synchronized void update() {
+    protected void update() {
         if (!isActive) return;
 
-        // Увеличение угла для следующего кадра анимации
+        double speed = 5.0;
         angle += speed / 100.0;
         angle %= (2 * Math.PI);
 
-        // Вычисление новых координат относительно центра окружности
-        final double newX = centerX + radius * Math.cos(angle);
-        final double newY = centerY + radius * Math.sin(angle);
 
-        // Обновление координат ImageView на потоке JavaFX Application
+        Point center = new Point((int) centerX, (int) centerY);
+        Point offset = new Point((int) (radius * Math.cos(angle)), (int) (radius * Math.sin(angle)));
+        Point newPosition = center.add(offset);
+
+
         Platform.runLater(() -> {
-            ant.getImageView().setLayoutX(newX);
-            ant.getImageView().setLayoutY(newY);
+            ant.getImageView().setLayoutX(newPosition.getX());
+            ant.getImageView().setLayoutY(newPosition.getY());
         });
     }
+
 }
+
+//@Override
+//    public void run() {
+//        super.run();
+//        timer = new Timer();
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                if (isActive) update();
+//            }
+//        }, 0, 100);
+//    }
+
 
 
 

@@ -30,6 +30,8 @@ public class Habitat  {
     private Pane scenePane;
     private HabitatListener listener;
     public SimulationStateListener stateListener;
+    private WorkerAntAI workerAntAI;
+    private WarriorAntAI warriorAntAI;
 
 
     // Интерфейсы
@@ -45,6 +47,7 @@ public class Habitat  {
 
     public Habitat(Pane scene) {
         this.scenePane = scene;
+
     }
 
 
@@ -69,9 +72,10 @@ public class Habitat  {
             System.out.println("workerAnt");
             workerAntcount++;
             if (isWorkerAIChecked) {
-                WorkerAntAI workerAntAI = new WorkerAntAI(workerAnt, scenePane.getWidth(), scenePane.getHeight());
-                workerAntAI.start();
+                workerAntAI = new WorkerAntAI(workerAnt, scenePane.getWidth(), scenePane.getHeight());
+                workerAntAI.startAI();
                 setWorkerAntAI(workerAntAI);
+
             }
 
         }
@@ -89,14 +93,12 @@ public class Habitat  {
                 double centerX = warriorAnt.getBirthX();
                 double centerY = warriorAnt.getBirthY();
                 double radius = 20;
-                WarriorAntAI warriorAntAI = new WarriorAntAI(warriorAnt, centerX, centerY, radius);
-                warriorAntAI.start();
+                warriorAntAI = new WarriorAntAI(warriorAnt, centerX, centerY, radius);
+                warriorAntAI.startAI();
                 setWarriorAntAI(warriorAntAI);
             }
         }
 
-//        System.out.println("scenePane layout: x=" + scenePane.getLayoutX() + ", y=" + scenePane.getLayoutY());
-//        System.out.println("scenePane size: width=" + scenePane.getWidth() + ", height=" + scenePane.getHeight());
     }
 
 
@@ -126,7 +128,6 @@ public class Habitat  {
 
     public void stopSimulation() {
         //ai
-        BaseAI.stopAllAI();
         simulationActive = false;
         eKeyPressed = true;
         if (stateListener != null) {
@@ -143,9 +144,6 @@ public class Habitat  {
         this.listener = listener;
     }
 
-
-    private WorkerAntAI workerAntAI;
-    private WarriorAntAI warriorAntAI;
 
     public void setWorkerAntAI(WorkerAntAI workerAntAI) {
         this.workerAntAI = workerAntAI;
@@ -166,4 +164,22 @@ public class Habitat  {
             warriorAntAI.setAIPriority(newPriority);
         }
     }
+
+    public void TWorkerAntAI(boolean enable) {
+        if (enable) {
+            BaseAI.startAIByType(WorkerAntAI.class);
+        } else {
+            BaseAI.stopAIByType(WorkerAntAI.class);
+        }
+    }
+
+    public void TWarriorAntAI(boolean enable) {
+        if (enable) {
+            BaseAI.startAIByType(WarriorAntAI.class);
+        } else {
+            BaseAI.stopAIByType(WarriorAntAI.class);
+        }
+    }
+
+
 }
