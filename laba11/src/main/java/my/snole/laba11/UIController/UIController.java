@@ -81,6 +81,7 @@ public class UIController {
     public  CheckBox warriorAI;
     @FXML
     public  CheckBox workerAI;
+    private BaseAI baseAI;
 
 
 
@@ -96,14 +97,14 @@ public class UIController {
         int warriorAntN2 = parseInputOrUseDefault(timeTextWar, 2);
         long workLifeTime = parseInputOrUseDefault(lifeTimeTextWork, 10);
         long warLifeTime = parseInputOrUseDefault(lifeTimeTextWar, 12);
-
+        boolean isWorkerAIChecked = workerAI.isSelected();
+        boolean isWarriorAIChecked = warriorAI.isSelected();
         return new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    boolean isWorkerAIChecked = workerAI.isSelected();
-                    boolean isWarriorAIChecked = warriorAI.isSelected();
-                    habitat.update(System.currentTimeMillis(), workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime, isWorkerAIChecked, isWarriorAIChecked);
+
+                    habitat.update(System.currentTimeMillis(), workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
                     if (popup.isShowing()) {
                         updateTimeLabel();
                     }
@@ -125,6 +126,8 @@ public class UIController {
                     hideInformationButton.setSelected(true);
                     startButton.setDisable(true);
                     stopButton.setDisable(false);
+                    habitat.toggleWorkerAntAI(workerAI.isSelected());
+                    habitat.toggleWarriorAntAI(warriorAI.isSelected());
                 });
             }
             @Override
@@ -139,21 +142,26 @@ public class UIController {
                     showInformationButton.setSelected(false);
                     hideInformationButton.setSelected(true);
                     setButtonsStopped();
-
+                    habitat.stopAnts();
                 });
             }
         });
 
         initializeMenuBindings();
+        //4 лаба
         setupPriorityComboBox(workerAntPriorityComboBox, newVal -> habitat.changeWorkerAntPriority(newVal));
         setupPriorityComboBox(warriorAntPriorityComboBox, newVal -> habitat.changeWarriorAntPriority(newVal));
 
-        workerAI.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            habitat.TWorkerAntAI(newValue);
+        workerAI.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (Habitat.simulationActive) {
+                habitat.toggleWorkerAntAI(isSelected);
+            }
         });
 
-        warriorAI.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            habitat.TWarriorAntAI(newValue);
+        warriorAI.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (Habitat.simulationActive) {
+                habitat.toggleWarriorAntAI(isSelected);
+            }
         });
 
     }
@@ -424,6 +432,7 @@ public class UIController {
         comboBox.getItems().addAll(
                 Thread.MIN_PRIORITY, Thread.NORM_PRIORITY, Thread.MAX_PRIORITY
         );
+
         comboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 changePriorityFunction.accept(newVal);

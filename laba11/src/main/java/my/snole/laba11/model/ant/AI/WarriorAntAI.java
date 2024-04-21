@@ -3,45 +3,48 @@ package my.snole.laba11.model.ant.AI;
 import javafx.application.Platform;
 import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.Point;
+import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.model.ant.Ant;
+import my.snole.laba11.model.ant.WarriorAnt;
+
+import java.util.Vector;
 
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WarriorAntAI extends BaseAI {
-    private final Ant ant;
-    private final double radius;
-    private double angle = 0.0;
-    private final double centerX;
-    private final double centerY;
+    private Map<WarriorAnt, Double> angles = new HashMap<>();
 
-    public WarriorAntAI(Ant ant, double centerX, double centerY, double radius) {
-        this.ant = ant;
-        this.radius = radius;
-        this.centerX = centerX;
-        this.centerY = centerY;
-    }
-
-
+    @Override
     protected void update() {
         if (!isActive) return;
 
-        double speed = 5.0;
-        angle += speed / 100.0;
-        angle %= (2 * Math.PI);
+        ConcurrentLinkedQueue<Ant> ants = SingletonDynamicArray.getInstance().getAntsList();
+        for (Ant ant : ants) {
+            if (ant instanceof WarriorAnt warrior) {
+                double angle = angles.getOrDefault(warrior, 0.0);
+                double speed = 10.0;
+                angle += speed / 100.0;
+                angle %= (2 * Math.PI);
+                angles.put(warrior, angle);
 
+                Point center = new Point((int) warrior.getBirthX(), (int) warrior.getBirthY());
+                Point offset = new Point((int) (warrior.getRadius() * Math.cos(angle)), (int) (warrior.getRadius() * Math.sin(angle)));
+                Point newPosition = center.add(offset);
 
-        Point center = new Point((int) centerX, (int) centerY);
-        Point offset = new Point((int) (radius * Math.cos(angle)), (int) (radius * Math.sin(angle)));
-        Point newPosition = center.add(offset);
-
-
-        Platform.runLater(() -> {
-            ant.getImageView().setLayoutX(newPosition.getX());
-            ant.getImageView().setLayoutY(newPosition.getY());
-        });
+                Platform.runLater(() -> {
+                    warrior.getImageView().setLayoutX(newPosition.getX());
+                    warrior.getImageView().setLayoutY(newPosition.getY());
+                });
+            }
+        }
     }
-
 }
+
+
 
 //@Override
 //    public void run() {

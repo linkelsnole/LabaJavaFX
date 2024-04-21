@@ -6,13 +6,9 @@ import java.util.*;
 public abstract class BaseAI extends Thread {
     protected Timer timer;
     protected boolean isActive = true;
-    private boolean paused = false;
+    private volatile boolean paused = false;
     private final Object lock = new Object();
-    private static final List<BaseAI> allAI = new ArrayList<>();
 
-    public BaseAI() {
-        allAI.add(this);
-    }
 
     @Override
     public void run() {
@@ -48,12 +44,11 @@ public abstract class BaseAI extends Thread {
 
     public synchronized void stopAI() {
         isActive = false;
+        notifyAll();
     }
 
     public void pauseAI() {
-        synchronized (lock) {
-            paused = true;
-        }
+        paused = true;
     }
 
     public void resumeAI() {
@@ -63,24 +58,6 @@ public abstract class BaseAI extends Thread {
         }
     }
 
-    public static void stopAIByType(Class<?> aiType) {
-        synchronized (allAI) {
-            for (BaseAI ai : allAI) {
-                if (aiType.isInstance(ai)) {
-                    ai.pauseAI();
-                }
-            }
-        }
-    }
-    public static void startAIByType(Class<?> aiType) {
-        synchronized (allAI) {
-            for (BaseAI ai : allAI) {
-                if (aiType.isInstance(ai)) {
-                    ai.resumeAI();
-                }
-            }
-        }
-    }
     public boolean isAIActive() {
         return isActive;
     }
@@ -96,78 +73,9 @@ public abstract class BaseAI extends Thread {
 
 
 
-//public synchronized void startAI() {
-//        isActive = true;
-//        start();
-//    }
-//
-//    public synchronized void stopAI() {
-//        isActive = false;
-//    }
-//
-//    public void setAIPriority(int priority) {
-//        this.setPriority(priority);
-//    }
-//
-//    public int getAIPriority() {
-//        return this.getPriority();
-//    }
-//
-//    public boolean getAIActive() {
-//        return isActive;
-//    }
 
 
 
 
-
-
-//public abstract class BaseAI extends Thread {
-//    protected Timer timer;
-//    protected boolean isActive = true;
-//    private final Object lock = new Object();
-//    private static final List<BaseAI> allAI = new ArrayList<>();
-//    public BaseAI() {
-//        synchronized (allAI) {
-//            allAI.add(this);
-//        }
-//    }
-//
-//    public synchronized void startAI() {
-//        isActive = true;
-//    }
-//
-//    public synchronized void stopAI() {
-//        isActive = false;
-//        notify();
-//    }
-//
-//    public static void stopAllAI() {
-//        synchronized (allAI) {
-//            for (BaseAI ai : allAI) {
-//                ai.stopAI();
-//            }
-//        }
-//    }
-//
-//    public static void startAllAI() {
-//        synchronized (allAI) {
-//            for (BaseAI ai : allAI) {
-//                ai.startAI();
-//            }
-//        }
-//    }
-//
-//    public boolean isAIActive() {
-//        return isActive; }
-//
-//    public void setAIPriority(int priority) {
-//        setPriority(priority);
-//    }
-//
-//    public int getAIPriority() {
-//        return getPriority();
-//    }
-//}
 
 

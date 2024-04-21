@@ -7,10 +7,11 @@ import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.ant.Ant;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SingletonDynamicArray {
 
-    private static final Vector<Ant> elements = new Vector<>();
+    private static final ConcurrentLinkedQueue<Ant> elements = new ConcurrentLinkedQueue<>();
     private static final HashSet<Integer> ids = new HashSet<>();
     private static final TreeMap<Integer, Long> birthTimes = new TreeMap<>();
     private static SingletonDynamicArray instance = null;
@@ -24,7 +25,7 @@ public class SingletonDynamicArray {
         return instance;
     }
 
-    public Vector<Ant> getAntsList() {
+    public ConcurrentLinkedQueue<Ant> getAntsList() {
         return elements;
     }
 

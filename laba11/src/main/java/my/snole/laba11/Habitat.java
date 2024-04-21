@@ -30,8 +30,8 @@ public class Habitat  {
     private Pane scenePane;
     private HabitatListener listener;
     public SimulationStateListener stateListener;
-    private WorkerAntAI workerAntAI;
     private WarriorAntAI warriorAntAI;
+    private WorkerAntAI workerAntAI;
 
 
     // Интерфейсы
@@ -53,7 +53,7 @@ public class Habitat  {
 
 
 
-    public void update(long time, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2, long workLifeTime, long warLifeTime, boolean isWorkerAIChecked, boolean isWarriorAIChecked) {
+    public void update(long time, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2, long workLifeTime, long warLifeTime) {
         if (!simulationActive) {
             return;
         }
@@ -71,13 +71,6 @@ public class Habitat  {
             SingletonDynamicArray.getInstance().addElement(workerAnt, workerAnt.getBirthTime());
             System.out.println("workerAnt");
             workerAntcount++;
-            if (isWorkerAIChecked) {
-                workerAntAI = new WorkerAntAI(workerAnt, scenePane.getWidth(), scenePane.getHeight());
-                workerAntAI.startAI();
-                setWorkerAntAI(workerAntAI);
-
-            }
-
         }
 
         if (time % warriorAntN2 == 0 && service.checkProbability(warriorAntP2)) {
@@ -89,14 +82,6 @@ public class Habitat  {
             SingletonDynamicArray.getInstance().addElement(warriorAnt, warriorAnt.getBirthTime());
             System.out.println("warAnt");
             warriorAntcount++;
-            if (isWarriorAIChecked) {
-                double centerX = warriorAnt.getBirthX();
-                double centerY = warriorAnt.getBirthY();
-                double radius = 20;
-                warriorAntAI = new WarriorAntAI(warriorAnt, centerX, centerY, radius);
-                warriorAntAI.startAI();
-                setWarriorAntAI(warriorAntAI);
-            }
         }
 
     }
@@ -127,7 +112,6 @@ public class Habitat  {
     }
 
     public void stopSimulation() {
-        //ai
         simulationActive = false;
         eKeyPressed = true;
         if (stateListener != null) {
@@ -144,15 +128,6 @@ public class Habitat  {
         this.listener = listener;
     }
 
-
-    public void setWorkerAntAI(WorkerAntAI workerAntAI) {
-        this.workerAntAI = workerAntAI;
-    }
-
-    public void setWarriorAntAI(WarriorAntAI warriorAntAI) {
-        this.warriorAntAI = warriorAntAI;
-    }
-
     public void changeWorkerAntPriority(int newPriority) {
         if(workerAntAI != null) {
             workerAntAI.setAIPriority(newPriority);
@@ -165,21 +140,41 @@ public class Habitat  {
         }
     }
 
-    public void TWorkerAntAI(boolean enable) {
+    public void toggleWarriorAntAI(boolean enable) {
         if (enable) {
-            BaseAI.startAIByType(WorkerAntAI.class);
+            if (warriorAntAI == null || !warriorAntAI.isAlive()) {
+                warriorAntAI = new WarriorAntAI();
+                warriorAntAI.startAI();
+            } else {
+                warriorAntAI.resumeAI();
+            }
         } else {
-            BaseAI.stopAIByType(WorkerAntAI.class);
+            if (warriorAntAI != null) {
+                warriorAntAI.pauseAI();
+            }
         }
     }
 
-    public void TWarriorAntAI(boolean enable) {
+    public void toggleWorkerAntAI(boolean enable) {
         if (enable) {
-            BaseAI.startAIByType(WarriorAntAI.class);
+            if (workerAntAI == null || !workerAntAI.isAlive()) {
+                workerAntAI = new WorkerAntAI(scenePane.getWidth(), scenePane.getHeight());
+                workerAntAI.startAI();
+            } else {
+                workerAntAI.resumeAI();
+            }
         } else {
-            BaseAI.stopAIByType(WarriorAntAI.class);
+            if (workerAntAI != null) {
+                workerAntAI.pauseAI();
+            }
         }
     }
+
+    public void stopAnts () {
+        warriorAntAI.stopAI();
+        workerAntAI.stopAI();
+    }
+
 
 
 }

@@ -124,6 +124,7 @@
                                         <Integer fx:value="70" />
                                         <Integer fx:value="80" />
                                         <Integer fx:value="90" />
+                                        <Integer fx:value="100" />
                                     </FXCollections>
                                 </items>
                                 <tooltip>
@@ -142,6 +143,7 @@
                                         <Integer fx:value="70" />
                                         <Integer fx:value="80" />
                                         <Integer fx:value="90" />
+                                        <Integer fx:value="100" />
                                     </FXCollections>
                                 </items>
                                 <tooltip>
