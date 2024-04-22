@@ -32,7 +32,7 @@ public class WorkerAntAI extends BaseAI {
     @Override
     protected void update() {
         if (!isActive) return;
-        
+
         ConcurrentLinkedQueue<Ant> ants = SingletonDynamicArray.getInstance().getAntsList();
         for (Ant ant : ants) {
             if (ant instanceof WorkerAnt) {
