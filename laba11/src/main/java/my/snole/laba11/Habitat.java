@@ -171,8 +171,10 @@ public class Habitat  {
     }
 
     public void stopAnts () {
-        warriorAntAI.stopAI();
-        workerAntAI.stopAI();
+        if (warriorAntAI != null && workerAntAI != null) {
+            warriorAntAI.stopAI();
+            workerAntAI.stopAI();
+        }
     }
 
 
