@@ -85,7 +85,7 @@
                               <Font name="Verdana Bold" size="14.0" />
                            </font>
                         </Button>
-                        <Button fx:id="saveSimulationButton" disable="false" layoutX="48.0" layoutY="182.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="33.0" prefWidth="191.0" text="Save simulation">
+                        <Button fx:id="saveSimulationButton" onAction="#handleSaveSimulation" disable="false" layoutX="48.0" layoutY="182.0" mnemonicParsing="false"  prefHeight="33.0" prefWidth="191.0" text="Save simulation">
                            <effect>
                               <Blend />
                            </effect>
@@ -96,7 +96,7 @@
                               <Tooltip text="Начать симуляцию" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="loadSimulationButton" disable="false" layoutX="48.0" layoutY="223.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="33.0" prefWidth="191.0" text="Load simulation">
+                        <Button fx:id="loadSimulationButton" onAction="#handleLoadSimulation" disable="false" layoutX="48.0" layoutY="223.0" mnemonicParsing="false"  prefHeight="33.0" prefWidth="191.0" text="Load simulation">
                            <effect>
                               <Blend />
                            </effect>
@@ -107,7 +107,7 @@
                               <Tooltip text="Начать симуляцию" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="consoleButton" disable="false" layoutX="48.0" layoutY="265.0" mnemonicParsing="false" onAction="#handleStart" prefHeight="33.0" prefWidth="191.0" text="Console">
+                        <Button fx:id="consoleButton" disable="false" layoutX="48.0" layoutY="265.0" mnemonicParsing="false" onMouseClicked="#handleOpenConsole" prefHeight="33.0" prefWidth="191.0" text="Console">
                            <effect>
                               <Blend />
                            </effect>

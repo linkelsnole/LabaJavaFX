@@ -3,20 +3,22 @@ package my.snole.laba11.model;
 import javafx.application.Platform;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import my.snole.laba11.Habitat;
 import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.ant.Ant;
+import my.snole.laba11.service.Config;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SingletonDynamicArray {
-
     private static final ConcurrentLinkedQueue<Ant> elements = new ConcurrentLinkedQueue<>();
     private static final HashSet<Integer> ids = new HashSet<>();
     private static final TreeMap<Integer, Long> birthTimes = new TreeMap<>();
     private static SingletonDynamicArray instance = null;
-    private SingletonDynamicArray() {
-    }
+    private Config config = new Config();
+    private Habitat habitat;
+
 
     public static SingletonDynamicArray getInstance() {
         if(instance==null) {
@@ -28,7 +30,17 @@ public class SingletonDynamicArray {
     public ConcurrentLinkedQueue<Ant> getAntsList() {
         return elements;
     }
+    public Config getConfig() {
+        return config;
+    }
 
+
+    public void setAntsList(ConcurrentLinkedQueue<Ant> newAnts) {
+        clear();
+        for (Ant ant : newAnts) {
+            addElement(ant, ant.getBirthTime());
+        }
+    }
 
 public void addElement(Ant element, long birthTime) {
     int id = generateUniqueId();
@@ -39,6 +51,14 @@ public void addElement(Ant element, long birthTime) {
     element.setBirthPosition(element.getImageView().getLayoutX(), element.getImageView().getLayoutY());
 
 }
+
+    public void addElementConfig(Ant ant) {
+        if (!ids.contains(ant.getId())) {
+            elements.add(ant);
+            ids.add(ant.getId());
+            birthTimes.put(ant.getId(), ant.getBirthTime());
+        }
+    }
 
     public void clear() {
         elements.clear();
@@ -77,7 +97,9 @@ public void addElement(Ant element, long birthTime) {
     public Vector<Ant> getElements() {
         return new Vector<>(elements);
     }
-
+    public void setHabitat(Habitat habitat) {
+        this.habitat = habitat;
+    }
 
 
 

@@ -21,9 +21,13 @@ import my.snole.laba11.AliveAntsDialog;
 import my.snole.laba11.Habitat;
 import my.snole.laba11.HelloApplication;
 import my.snole.laba11.baseAI.BaseAI;
+import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.model.ant.AI.WarriorAntAI;
 import my.snole.laba11.model.ant.AI.WorkerAntAI;
+import my.snole.laba11.service.Config;
+import my.snole.laba11.service.Console;
 import my.snole.laba11.service.UIService;
+
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -78,19 +82,14 @@ public class UIController {
     @FXML
     private ComboBox<Integer> warriorAntPriorityComboBox;
     @FXML
-    public  CheckBox warriorAI;
+    public CheckBox warriorAI;
     @FXML
-    public  CheckBox workerAI;
+    public CheckBox workerAI;
     private BaseAI baseAI;
+    Config config;
 
 
-
-
-
-
-
-
-    private TimerTask createTimerTask() {
+    private TimerTask createTimerTask(long startTime) {
         float workerAntP1 = getProbability(comboProbWork, 50);
         float warriorAntP2 = getProbability(comboProbWar, 50);
         int workerAntN1 = parseInputOrUseDefault(timeTextWork, 2);
@@ -103,8 +102,8 @@ public class UIController {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-
-                    habitat.update(System.currentTimeMillis(), workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
+                    long currentTime = System.currentTimeMillis() - startTime;
+                    habitat.update(currentTime, workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
                     if (popup.isShowing()) {
                         updateTimeLabel();
                     }
@@ -112,6 +111,7 @@ public class UIController {
             }
         };
     }
+
     @FXML
     private void initialize() {
 
@@ -130,6 +130,7 @@ public class UIController {
                     habitat.toggleWarriorAntAI(warriorAI.isSelected());
                 });
             }
+
             @Override
             public void onSimulationStopped() {
                 Platform.runLater(() -> {
@@ -163,6 +164,8 @@ public class UIController {
                 habitat.toggleWarriorAntAI(isSelected);
             }
         });
+
+        SingletonDynamicArray.getInstance().getConfig().setUIController(this);
 
     }
 
@@ -340,7 +343,7 @@ public class UIController {
             task.cancel();
         }
         timer = new Timer();
-        task = createTimerTask();
+        task = createTimerTask(Habitat.startTime);
         timer.schedule(task, 0, 1000);
     }
 
@@ -384,7 +387,7 @@ public class UIController {
         }
     }
 
-    private void initializeMenuBindings () {
+    private void initializeMenuBindings() {
         ToggleGroup timeToggleGroup = new ToggleGroup();
         showTimeMenuItem.setToggleGroup(timeToggleGroup);
         hideTimeMenuItem.setToggleGroup(timeToggleGroup);
@@ -402,18 +405,18 @@ public class UIController {
         warriorAntPriorityComboBox.setValue(Thread.NORM_PRIORITY);
     }
 
-    private void setButtonsStopped () {
+    private void setButtonsStopped() {
         showInformationButton.setSelected(false);
         hideInformationButton.setSelected(true);
-        if(Habitat.simulationActive) {
+        if (Habitat.simulationActive) {
             startButton.setDisable(true);
             stopButton.setDisable(false);
-        }
-        else {
+        } else {
             startButton.setDisable(false);
             stopButton.setDisable(true);
         }
     }
+
     @FXML
     private void handleShowSummaryAction() {
     }
@@ -440,5 +443,46 @@ public class UIController {
         });
     }
 
+
+    public void setSimulationParameters(long currentTimeSimulation, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2, long workLifeTime, long warLifeTime) {
+        Platform.runLater(() -> {
+            timeTextWork.setText(String.valueOf(workerAntN1));
+            timeTextWar.setText(String.valueOf(warriorAntN2));
+            lifeTimeTextWork.setText(String.valueOf(workLifeTime));
+            lifeTimeTextWar.setText(String.valueOf(warLifeTime));
+
+            comboProbWork.getSelectionModel().select(Integer.valueOf((int) (workerAntP1 * 100)));
+            comboProbWar.getSelectionModel().select(Integer.valueOf((int) (warriorAntP2 * 100)));
+
+            workerAI.setSelected(workerAntN1 < 0);
+            warriorAI.setSelected(warriorAntN2 < 0);
+
+            habitat.setCurrentTimeSimulation(currentTimeSimulation);
+
+        });
+    }
+
+
+
+
+    @FXML
+    private void handleSaveSimulation() {
+
+        SingletonDynamicArray.getInstance().getConfig().saveInFile();
+    }
+
+    @FXML
+    private void handleLoadSimulation() {
+        SingletonDynamicArray.getInstance().getConfig().loadFromFile();
+    }
+
+    @FXML
+    private void handleOpenConsole(MouseEvent event) {
+        Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        if (HelloApplication.instance.console == null) {
+            HelloApplication.instance.console = new Console(primaryStage, habitat);
+        }
+        HelloApplication.instance.console.show();
+    }
 
 }

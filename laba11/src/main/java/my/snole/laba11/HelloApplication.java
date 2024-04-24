@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import my.snole.laba11.UIController.UIController;
+import my.snole.laba11.service.Config;
+import my.snole.laba11.service.Console;
 
 import java.io.IOException;
 
@@ -14,6 +16,7 @@ public class HelloApplication extends Application {
     public static HelloApplication instance;
     public AliveAntsDialog aliveAntsDialog;
 
+    public Console console;
     private Stage primaryStage;
     private Stage stage;
 

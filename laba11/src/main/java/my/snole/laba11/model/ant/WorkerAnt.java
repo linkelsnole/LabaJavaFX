@@ -3,8 +3,10 @@ package my.snole.laba11.model.ant;
 import javafx.scene.image.Image;
 
 import java.io.InputStream;
+import java.io.Serializable;
 
-public class WorkerAnt extends Ant {
+public class WorkerAnt extends Ant implements Serializable {
+    private transient Image image;
     public WorkerAnt() {
         if (image == null) {
             InputStream stream = getClass().getResourceAsStream("/image/worker.png");
@@ -14,7 +16,6 @@ public class WorkerAnt extends Ant {
             image = new Image(stream);
         }
     }
-    private static Image image;
     @Override
     public Image getImage() {
         return image;

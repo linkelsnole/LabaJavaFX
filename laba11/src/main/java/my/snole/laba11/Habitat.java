@@ -1,5 +1,6 @@
 package my.snole.laba11;
 
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.ant.AI.WarriorAntAI;
@@ -13,13 +14,15 @@ import my.snole.laba11.service.UIService;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.image.ImageView;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 public class Habitat  {
 
     public static  int warriorAntcount = 0;
     public static  int workerAntcount = 0;
     public static boolean eKeyPressed = false;
-
+    public long currentTimeSimulation;
     public static long startTime;
     public static long stoptime = 0;
     public static boolean isSimulationStopped = false;
@@ -32,6 +35,13 @@ public class Habitat  {
     public SimulationStateListener stateListener;
     private WarriorAntAI warriorAntAI;
     private WorkerAntAI workerAntAI;
+    private long workerAntN1;
+    private long warriorAntN2;
+    private float workerAntP1;
+    private float warriorAntP2;
+    private long workLifeTime;
+    private long warLifeTime;
+
 
 
     // Интерфейсы
@@ -47,7 +57,7 @@ public class Habitat  {
 
     public Habitat(Pane scene) {
         this.scenePane = scene;
-
+        SingletonDynamicArray.getInstance().getConfig().setHabitat(this);
     }
 
 
@@ -57,12 +67,18 @@ public class Habitat  {
         if (!simulationActive) {
             return;
         }
-
+        this.workerAntN1 = workerAntN1;
+        this.warriorAntN2 = warriorAntN2;
+        this.workerAntP1 = workerAntP1;
+        this.warriorAntP2 = warriorAntP2;
+        this.workLifeTime = workLifeTime;
+        this.warLifeTime = warLifeTime;
+        currentTimeSimulation = time;
         long currentTime = System.currentTimeMillis();
 
         list.removeExpiredElements(currentTime, scenePane);
 
-        if (time % workerAntN1 == 0 && service.checkProbability(workerAntP1)) {
+        if (currentTimeSimulation % workerAntN1 == 0 && service.checkProbability(workerAntP1)) {
             WorkerAnt workerAnt = new WorkerAnt();
             workerAnt.setId(list.generateUniqueId());
             workerAnt.setBirthTime(currentTime);
@@ -73,7 +89,7 @@ public class Habitat  {
             workerAntcount++;
         }
 
-        if (time % warriorAntN2 == 0 && service.checkProbability(warriorAntP2)) {
+        if (currentTimeSimulation % warriorAntN2 == 0 && service.checkProbability(warriorAntP2)) {
             WarriorAnt warriorAnt = new WarriorAnt();
             warriorAnt.setId(list.generateUniqueId());
             warriorAnt.setBirthTime(currentTime);
@@ -98,6 +114,31 @@ public class Habitat  {
         ant.setBirthPosition(point.getX(), point.getY());
         if (listener != null) {
             listener.onAntAdded(imageView);
+        }
+    }
+
+    public void restoreAnts(ConcurrentLinkedQueue<Ant> ants) {
+        for (Ant ant : ants) {
+            ImageView imageView = new ImageView(ant.getImage());
+            imageView.setLayoutX(ant.getBirthX());
+            imageView.setLayoutY(ant.getBirthY());
+            imageView.setVisible(true);
+            scenePane.getChildren().add(imageView);
+            ant.setImageView(imageView);
+        }
+
+    }
+
+    private Image imageWork = new Image(getClass().getResourceAsStream("/image/worker.png"));
+    private Image imageWar = new Image(getClass().getResourceAsStream("/image/war.png"));
+    public void restoreAntImageView(Ant ant) {
+        if (ant.getBirthX() != 0 && ant.getBirthY() != 0) {
+            ImageView imageView = new ImageView(ant.getImage());
+            imageView.setX(ant.getBirthX());
+            imageView.setY(ant.getBirthY());
+            imageView.setVisible(true);
+            scenePane.getChildren().add(imageView);
+            ant.setImageView(imageView);
         }
     }
 
@@ -171,10 +212,43 @@ public class Habitat  {
     }
 
     public void stopAnts () {
-        warriorAntAI.stopAI();
-        workerAntAI.stopAI();
+        if (warriorAntAI != null && workerAntAI != null) {
+            warriorAntAI.stopAI();
+            workerAntAI.stopAI();
+        }
     }
 
+    public long getCurrentTimeSimulation() {
+        return currentTimeSimulation;
+    }
+
+    public long getWorkerAntN1() {
+        return workerAntN1;
+    }
+
+    public long getWarriorAntN2() {
+        return warriorAntN2;
+    }
+
+    public float getWorkerAntP1() {
+        return workerAntP1;
+    }
+
+    public float getWarriorAntP2() {
+        return warriorAntP2;
+    }
+
+    public long getWorkLifeTime() {
+        return workLifeTime;
+    }
+
+    public long getWarLifeTime() {
+        return warLifeTime;
+    }
+
+    public void setCurrentTimeSimulation(long currentTimeSimulation) {
+        this.currentTimeSimulation = currentTimeSimulation;
+    }
 
 
 }

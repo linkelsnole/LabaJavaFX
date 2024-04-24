@@ -16,9 +16,11 @@ public abstract class Ant {
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
+
     public long getBirthTime() {
         return birthTime;
     }
@@ -43,13 +45,13 @@ public abstract class Ant {
         this.image = image;
     }
 
-    protected Image image;
+    protected transient Image image;
 
-    public Image getImage () {
+    public Image getImage() {
         return image;
     }
 
-    private ImageView imageView;
+    private transient ImageView imageView;
 
     public ImageView getImageView() {
         return imageView;
@@ -71,15 +73,4 @@ public abstract class Ant {
         this.birthX = x;
         this.birthY = y;
     }
-
-    //для 4
-    private BaseAI ai;
-    public void setAI(BaseAI ai) {
-        this.ai = ai;
-    }
-
-    public BaseAI getAI() {
-        return ai;
-    }
-
 }
