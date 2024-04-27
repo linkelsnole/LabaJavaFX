@@ -89,9 +89,8 @@ public class UIController {
     Config config;
 
 
-    private TimerTask createTimerTask(long startTime) {
-        float workerAntP1 = getProbability(comboProbWork, 50);
-        float warriorAntP2 = getProbability(comboProbWar, 50);
+    private TimerTask createTimerTask() {
+
         int workerAntN1 = parseInputOrUseDefault(timeTextWork, 2);
         int warriorAntN2 = parseInputOrUseDefault(timeTextWar, 2);
         long workLifeTime = parseInputOrUseDefault(lifeTimeTextWork, 10);
@@ -102,8 +101,9 @@ public class UIController {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    long currentTime = System.currentTimeMillis() - startTime;
-                    habitat.update(currentTime, workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
+                    float workerAntP1 = getProbability(comboProbWork, 10);
+                    float warriorAntP2 = getProbability(comboProbWar, 10);
+                    habitat.update(System.currentTimeMillis(), workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
                     if (popup.isShowing()) {
                         updateTimeLabel();
                     }
@@ -122,10 +122,10 @@ public class UIController {
                 Platform.runLater(() -> {
                     hidePopups();
                     scheduleTask();
-                    showInformationButton.setSelected(false);
-                    hideInformationButton.setSelected(true);
                     startButton.setDisable(true);
                     stopButton.setDisable(false);
+                    showInformationButton.setSelected(false);
+                    hideInformationButton.setSelected(true);
                     habitat.toggleWorkerAntAI(workerAI.isSelected());
                     habitat.toggleWarriorAntAI(warriorAI.isSelected());
                 });
@@ -140,8 +140,6 @@ public class UIController {
                     } else {
                         actuallyStopSimulation();
                     }
-                    showInformationButton.setSelected(false);
-                    hideInformationButton.setSelected(true);
                     setButtonsStopped();
                     habitat.stopAnts();
                 });
@@ -149,6 +147,7 @@ public class UIController {
         });
 
         initializeMenuBindings();
+
         //4 лаба
         setupPriorityComboBox(workerAntPriorityComboBox, newVal -> habitat.changeWorkerAntPriority(newVal));
         setupPriorityComboBox(warriorAntPriorityComboBox, newVal -> habitat.changeWarriorAntPriority(newVal));
@@ -244,7 +243,9 @@ public class UIController {
             case T:
                 if (!summaryPopup.isShowing()) {
                     if (!popup.isShowing()) {
-                        updateTimeLabel();
+                        if (Habitat.isSimulationStopped) {
+                            updateTimeLabel();
+                    }
                         showTimePopup();
                     } else {
                         popup.hide();
@@ -272,7 +273,9 @@ public class UIController {
     @FXML
     private void handleShowInformationAction() {
         if (!popup.isShowing()) {
-            updateTimeLabel();
+            if (Habitat.simulationActive) {
+                updateTimeLabel();
+            }
             showTimePopup();
         }
     }
@@ -343,7 +346,7 @@ public class UIController {
             task.cancel();
         }
         timer = new Timer();
-        task = createTimerTask(Habitat.startTime);
+        task = createTimerTask();
         timer.schedule(task, 0, 1000);
     }
 
@@ -372,10 +375,17 @@ public class UIController {
 
     private float getProbability(ComboBox<Integer> comboBox, float defaultValue) {
         if (comboBox.getValue() == null) {
+            System.out.println("Default probability due to null: " + defaultValue);
             return defaultValue;
         }
-        return comboBox.getValue() * 0.01f;
+        int value = comboBox.getValue();
+        System.out.println("Combo box value: " + value);
+        float probability = value * 0.01f;
+        float probabilityRoundedUp = (float) Math.ceil(probability * 100) / 100f;
+        System.out.println("Calculated probability rounded up: " + probabilityRoundedUp);
+        return probabilityRoundedUp;
     }
+
 
     private int parseInputOrUseDefault(TextField textField, int defaultValue) {
         try {
@@ -451,13 +461,15 @@ public class UIController {
             lifeTimeTextWork.setText(String.valueOf(workLifeTime));
             lifeTimeTextWar.setText(String.valueOf(warLifeTime));
 
-            comboProbWork.getSelectionModel().select(Integer.valueOf((int) (workerAntP1 * 100)));
             comboProbWar.getSelectionModel().select(Integer.valueOf((int) (warriorAntP2 * 100)));
+            comboProbWork.getSelectionModel().select(Integer.valueOf((int) (workerAntP1 * 100)));
+
 
             workerAI.setSelected(workerAntN1 < 0);
             warriorAI.setSelected(warriorAntN2 < 0);
 
             habitat.setCurrentTimeSimulation(currentTimeSimulation);
+            Habitat.startTime = currentTimeSimulation;
 
         });
     }
@@ -467,12 +479,13 @@ public class UIController {
 
     @FXML
     private void handleSaveSimulation() {
-
-        SingletonDynamicArray.getInstance().getConfig().saveInFile();
+        SingletonDynamicArray.getInstance().getConfig().saveInFileState();
     }
 
     @FXML
     private void handleLoadSimulation() {
+        if (Habitat.simulationActive)
+            habitat.stopSimulation();
         SingletonDynamicArray.getInstance().getConfig().loadFromFile();
     }
 

@@ -16,8 +16,9 @@ import my.snole.laba11.model.ant.Ant;
 public class Config implements Serializable {
     private Habitat habitat;
     private UIController uiController;
+    public static boolean isLoadedFromSave = false;
 
-    public synchronized void saveInFile() {
+    public synchronized void saveInFileState() {
         try (FileOutputStream fileOutputStream = new FileOutputStream("config.txt");
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
 
@@ -51,6 +52,8 @@ public class Config implements Serializable {
             long workLifeTime = (long) objectInputStream.readObject();
             long warLifeTime = (long) objectInputStream.readObject();
             ConcurrentLinkedQueue<Ant> ants = (ConcurrentLinkedQueue<Ant>) objectInputStream.readObject();
+
+            isLoadedFromSave = true;
 
             uiController.setSimulationParameters(time, workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
 

@@ -10,6 +10,7 @@ import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.model.ant.Ant;
 import my.snole.laba11.model.ant.WarriorAnt;
 import my.snole.laba11.model.ant.WorkerAnt;
+import my.snole.laba11.service.Config;
 import my.snole.laba11.service.UIService;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.image.ImageView;
@@ -22,7 +23,7 @@ public class Habitat  {
     public static  int warriorAntcount = 0;
     public static  int workerAntcount = 0;
     public static boolean eKeyPressed = false;
-    public long currentTimeSimulation;
+    public static long currentTimeSimulation;
     public static long startTime;
     public static long stoptime = 0;
     public static boolean isSimulationStopped = false;
@@ -73,12 +74,12 @@ public class Habitat  {
         this.warriorAntP2 = warriorAntP2;
         this.workLifeTime = workLifeTime;
         this.warLifeTime = warLifeTime;
-        currentTimeSimulation = time;
+//        currentTimeSimulation = time;
         long currentTime = System.currentTimeMillis();
 
         list.removeExpiredElements(currentTime, scenePane);
 
-        if (currentTimeSimulation % workerAntN1 == 0 && service.checkProbability(workerAntP1)) {
+        if (time % workerAntN1 == 0 && service.checkProbability(workerAntP1)) {
             WorkerAnt workerAnt = new WorkerAnt();
             workerAnt.setId(list.generateUniqueId());
             workerAnt.setBirthTime(currentTime);
@@ -89,7 +90,7 @@ public class Habitat  {
             workerAntcount++;
         }
 
-        if (currentTimeSimulation % warriorAntN2 == 0 && service.checkProbability(warriorAntP2)) {
+        if (time % warriorAntN2 == 0 && service.checkProbability(warriorAntP2)) {
             WarriorAnt warriorAnt = new WarriorAnt();
             warriorAnt.setId(list.generateUniqueId());
             warriorAnt.setBirthTime(currentTime);
@@ -131,20 +132,23 @@ public class Habitat  {
 
     private Image imageWork = new Image(getClass().getResourceAsStream("/image/worker.png"));
     private Image imageWar = new Image(getClass().getResourceAsStream("/image/war.png"));
-    public void restoreAntImageView(Ant ant) {
-        if (ant.getBirthX() != 0 && ant.getBirthY() != 0) {
-            ImageView imageView = new ImageView(ant.getImage());
-            imageView.setX(ant.getBirthX());
-            imageView.setY(ant.getBirthY());
-            imageView.setVisible(true);
-            scenePane.getChildren().add(imageView);
-            ant.setImageView(imageView);
-        }
-    }
+    public void restoreAntImageView(Ant ant) {    if (ant.getBirthX() != 0 && ant.getBirthY() != 0) {
+        ImageView imageView = new ImageView(ant instanceof WorkerAnt ? imageWork : imageWar);        imageView.setX(ant.getBirthX());
+        imageView.setY(ant.getBirthY());
+        imageView.setVisible(true);
+        scenePane.getChildren().add(imageView);
+        ant.setImageView(imageView);
+    }}
 
     public void startSimulation() {
         eKeyPressed = false;
-        startTime = System.currentTimeMillis();
+        if (Config.isLoadedFromSave) {
+            startTime = System.currentTimeMillis() - currentTimeSimulation;
+//            service.generateTimeString(isSimulationStopped, stoptime, startTime);
+            Config.isLoadedFromSave = false;
+        } else {
+            startTime = System.currentTimeMillis();
+        }
         list = SingletonDynamicArray.getInstance();
         simulationActive = true;
         if (stateListener != null) {

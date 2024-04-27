@@ -1,11 +1,13 @@
 package my.snole.laba11.service;
 
+import my.snole.laba11.Habitat;
 import my.snole.laba11.model.Point;
 
 public class UIService {
 
     public String generateTimeString(boolean isSimulationStopped, long stopTime, long startTime) {
         long timeFromStart = isSimulationStopped ? stopTime : System.currentTimeMillis() - startTime;
+        Habitat.currentTimeSimulation = timeFromStart;
         long second = (timeFromStart / 1000) % 60;
         long minute = (timeFromStart / (1000 * 60)) % 60;
         long hour = (timeFromStart / (1000 * 60 * 60)) % 24;

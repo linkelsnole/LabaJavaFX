@@ -5,9 +5,10 @@ import javafx.scene.image.Image;
 import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.Point;
 
+import java.io.Serializable;
 import java.util.concurrent.ForkJoinPool;
 
-public abstract class Ant {
+public abstract class Ant implements Serializable {
     private long birthTime;
     private long lifetime;
     private int id;
