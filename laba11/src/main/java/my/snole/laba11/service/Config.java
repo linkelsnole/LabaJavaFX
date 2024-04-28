@@ -84,7 +84,7 @@ public class Config implements Serializable {
     }
 
     /**
-     * Сериализует список муравьёв в файл [[
+     * Сериализует список муравьёв в файл
      */
     public synchronized void saveAntsListToFile() {
         try (FileOutputStream fos = new FileOutputStream(file);
