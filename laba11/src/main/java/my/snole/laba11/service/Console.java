@@ -1,5 +1,4 @@
 package my.snole.laba11.service;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,10 +19,11 @@ public class Console {
     private Stage stage;
     private Habitat habitat;
 
-    public Console() {
-    }
-
-
+    /**
+     *  Контруктор с параметрами
+     *  @param owner  Окно-владелец
+     *  @param habitat Объект класса [[Habitat]]
+     */
     public Console(Stage owner, Habitat habitat) {
         this.habitat = habitat;
         FXMLLoader loader = new FXMLLoader(Console.class.getResource("/my/snole/laba11/console.fxml"));
@@ -38,11 +38,10 @@ public class Console {
             e.printStackTrace();
         }
     }
-    public void show() {
-        if (stage != null) {
-            stage.show();
-        }
-    }
+
+    /**
+     * Обрабатывает команды ввода пользователя(start; stop) и выполняет соответствующие действия
+     */
     @FXML
     private void processCommand() {
         String command = textField.getText().trim();
@@ -62,6 +61,11 @@ public class Console {
                     break;
             }
         });
+    }
+    public void show() {
+        if (stage != null) {
+            stage.show();
+        }
     }
 
     private void appendText(String text) {

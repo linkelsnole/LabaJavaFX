@@ -453,7 +453,7 @@ public class UIController {
     }
 
 
-    public void setSimulationParameters(long currentTimeSimulation, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2, long workLifeTime, long warLifeTime) {
+    public void setSimulationParameters(long currentTimeSimulation, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2, long workLifeTime, long warLifeTime, boolean workerAI1, boolean warriorAI1) {
         Platform.runLater(() -> {
             timeTextWork.setText(String.valueOf(workerAntN1));
             timeTextWar.setText(String.valueOf(warriorAntN2));
@@ -463,9 +463,9 @@ public class UIController {
             comboProbWar.getSelectionModel().select(Integer.valueOf((int) (warriorAntP2 * 100)));
             comboProbWork.getSelectionModel().select(Integer.valueOf((int) (workerAntP1 * 100)));
 
-//            boolean workerAI1, boolean warriorAI1
-//            workerAI.setSelected(workerAI1);
-//            warriorAI.setSelected(warriorAI1);
+
+            workerAI.setSelected(workerAI1);
+            warriorAI.setSelected(warriorAI1);
 
             habitat.setCurrentTimeSimulation(currentTimeSimulation);
             Habitat.startTime = currentTimeSimulation;

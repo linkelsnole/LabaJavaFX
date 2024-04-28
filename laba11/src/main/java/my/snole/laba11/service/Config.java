@@ -21,8 +21,12 @@ public class Config implements Serializable {
     public static boolean isLoadedFromSave = false;
     private File file = new File("serialized.dat");
     private long loadedSimulationTime;
-    WorkerAntAI workerAntAI;
 
+
+    /**
+     * Сериализует текущее состояние симуляции в файл [[config.txt]]
+     * * Метод  {@link #saveAntsListToFile()} для объектов
+     */
     public synchronized void saveInFile() {
         try (FileOutputStream fileOutputStream = new FileOutputStream("config.txt");
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
@@ -35,8 +39,11 @@ public class Config implements Serializable {
             objectOutputStream.writeObject(habitat.getWorkLifeTime());
             objectOutputStream.writeObject(habitat.getWarLifeTime());
             objectOutputStream.writeObject(habitat.getLoadTIme());
+            objectOutputStream.writeObject(uiController.workerAI.isSelected());
+            objectOutputStream.writeObject(uiController.warriorAI.isSelected());
 
             saveAntsListToFile();
+
         } catch (FileNotFoundException e) {
             showAlert("Error! Config file not found!");
         } catch (IOException e) {
@@ -46,6 +53,10 @@ public class Config implements Serializable {
     }
 
 
+    /**
+     * Десериализует состояние симуляции из файла [[config.txt]].
+     * ! Метод {@link #loadAntsListFromFile()} для объектов
+     */
     public synchronized void loadFromFile() {
         try (FileInputStream fileInputStream = new FileInputStream("config.txt");
              ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
@@ -58,10 +69,12 @@ public class Config implements Serializable {
             long workLifeTime = (long) objectInputStream.readObject();
             long warLifeTime = (long) objectInputStream.readObject();
             loadedSimulationTime = (long) objectInputStream.readObject();
+            boolean workerAI = (boolean) objectInputStream.readObject();
+            boolean warriorAi = (boolean) objectInputStream.readObject();
 
             isLoadedFromSave = true;
 
-            uiController.setSimulationParameters(time, workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
+            uiController.setSimulationParameters(time, workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime, workerAI, warriorAi);
 
             loadAntsListFromFile();
 
@@ -70,6 +83,9 @@ public class Config implements Serializable {
         }
     }
 
+    /**
+     * Сериализует список муравьёв в файл [[
+     */
     public synchronized void saveAntsListToFile() {
         try (FileOutputStream fos = new FileOutputStream(file);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
@@ -79,23 +95,9 @@ public class Config implements Serializable {
         }
     }
 
-//    public synchronized void loadAntsListFromFile() {
-//        try (FileInputStream fis = new FileInputStream(file);
-//             ObjectInputStream ois = new ObjectInputStream(fis)) {
-//            ConcurrentLinkedQueue<Ant> ants = (ConcurrentLinkedQueue<Ant>) ois.readObject();
-//
-//            SingletonDynamicArray.getInstance().setHabitat(habitat);
-//
-//            SingletonDynamicArray.getInstance().setAntsList(ants);
-//
-//            for (Ant ant : ants) {
-//                habitat.restoreAntImageView(ant);
-//            }
-//
-//        } catch (IOException | ClassNotFoundException e) {
-//            showAlert("Error loading ants from file: " + e.getMessage());
-//        }
-//    }
+    /**
+     * Десериализует список муравьёв из файла и обновляет текущий список
+     */
     public synchronized void loadAntsListFromFile() {
         try (FileInputStream fis = new FileInputStream(file);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
@@ -104,8 +106,8 @@ public class Config implements Serializable {
 
             for (Ant ant : ants) {
                 long timeSinceSave = System.currentTimeMillis() - loadedSimulationTime;
-                ant.setBirthTime(ant.getBirthTime() + timeSinceSave);
-                habitat.restoreAntImageView(ant);
+                ant.setBirthTime(ant.getBirthTime() + timeSinceSave); //обновление birthTime
+                habitat.restoreAntImageView(ant); // восстановление изображений
             }
             SingletonDynamicArray.getInstance().setAntsList(ants);
         } catch (IOException | ClassNotFoundException e) {

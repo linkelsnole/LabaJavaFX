@@ -8,6 +8,11 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
-    <TextArea fx:id="textArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS"/>
+    <TextArea fx:id="textArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS">
+        <style>
+            -fx-control-inner-background: black;
+            -fx-text-fill: white;
+        </style>
+    </TextArea>
     <TextField fx:id="textField" onAction="#processCommand"/>
 </VBox>
