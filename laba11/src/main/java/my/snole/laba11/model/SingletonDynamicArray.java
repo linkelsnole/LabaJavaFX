@@ -1,18 +1,21 @@
 package my.snole.laba11.model;
 
 import javafx.application.Platform;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import my.snole.laba11.Habitat;
 import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.ant.Ant;
+import my.snole.laba11.model.ant.WarriorAnt;
+import my.snole.laba11.model.ant.WorkerAnt;
 import my.snole.laba11.service.Config;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SingletonDynamicArray {
-    private static final ConcurrentLinkedQueue<Ant> elements = new ConcurrentLinkedQueue<>();
+    private static ConcurrentLinkedQueue<Ant> elements = new ConcurrentLinkedQueue<>();
     private static final HashSet<Integer> ids = new HashSet<>();
     private static final TreeMap<Integer, Long> birthTimes = new TreeMap<>();
     private static SingletonDynamicArray instance = null;
@@ -38,27 +41,33 @@ public class SingletonDynamicArray {
     public void setAntsList(ConcurrentLinkedQueue<Ant> newAnts) {
         clear();
         for (Ant ant : newAnts) {
-            addElement(ant, ant.getBirthTime());
+            addElementConfig(ant, ant.getBirthTime());
         }
     }
 
-public void addElement(Ant element, long birthTime) {
-    int id = generateUniqueId();
-    element.setId(id);
-    elements.add(element);
-    ids.add(id);
-    birthTimes.put(id, birthTime);
-    element.setBirthPosition(element.getImageView().getLayoutX(), element.getImageView().getLayoutY());
 
-}
-
-    public void addElementConfig(Ant ant) {
-        if (!ids.contains(ant.getId())) {
-            elements.add(ant);
-            ids.add(ant.getId());
-            birthTimes.put(ant.getId(), ant.getBirthTime());
+    public void addElement(Ant element, long birthTime) {
+        int id = generateUniqueId();
+        element.setId(id);
+        elements.add(element);
+        ids.add(id);
+        birthTimes.put(id, birthTime);
+        element.setBirthPosition(element.getImageView().getLayoutX(), element.getImageView().getLayoutY());
+    }
+    public void addElementConfig(Ant element, long birthTime) {
+        int id = generateUniqueId();
+        element.setId(id);
+        elements.add(element);
+        ids.add(id);
+        birthTimes.put(id, birthTime);
+        if (element.getBirthX() == 0 && element.getBirthY() == 0) {
+            ImageView imageView = element.getImageView();
+            if (imageView != null) {
+                element.setBirthPosition(imageView.getLayoutX(), imageView.getLayoutY());
+            }
         }
     }
+
 
     public void clear() {
         elements.clear();
@@ -88,6 +97,7 @@ public void addElement(Ant element, long birthTime) {
             }
         }
     }
+
 
 
     public TreeMap<Integer, Long> getBirthTimes() {

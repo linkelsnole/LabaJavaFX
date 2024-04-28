@@ -1,6 +1,7 @@
 package my.snole.laba11.UIController;
 
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,6 +18,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import my.snole.laba11.AliveAntsDialog;
 import my.snole.laba11.Habitat;
 import my.snole.laba11.HelloApplication;
@@ -24,11 +26,15 @@ import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.model.ant.AI.WarriorAntAI;
 import my.snole.laba11.model.ant.AI.WorkerAntAI;
+import my.snole.laba11.model.ant.Ant;
+import my.snole.laba11.model.ant.WarriorAnt;
+import my.snole.laba11.model.ant.WorkerAnt;
 import my.snole.laba11.service.Config;
 import my.snole.laba11.service.Console;
 import my.snole.laba11.service.UIService;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 
@@ -90,7 +96,8 @@ public class UIController {
 
 
     private TimerTask createTimerTask() {
-
+        float workerAntP1 = getProbability(comboProbWork, 70);
+        float warriorAntP2 = getProbability(comboProbWar, 70);
         int workerAntN1 = parseInputOrUseDefault(timeTextWork, 2);
         int warriorAntN2 = parseInputOrUseDefault(timeTextWar, 2);
         long workLifeTime = parseInputOrUseDefault(lifeTimeTextWork, 10);
@@ -101,12 +108,8 @@ public class UIController {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    float workerAntP1 = getProbability(comboProbWork, 10);
-                    float warriorAntP2 = getProbability(comboProbWar, 10);
                     habitat.update(System.currentTimeMillis(), workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
-                    if (popup.isShowing()) {
-                        updateTimeLabel();
-                    }
+                    updateTimeLabel();
                 });
             }
         };
@@ -247,8 +250,10 @@ public class UIController {
                             updateTimeLabel();
                     }
                         showTimePopup();
+                        showInformationButton.setSelected(true);
                     } else {
                         popup.hide();
+                        hideInformationButton.setSelected(true);
                     }
                 }
                 timer.purge();
@@ -375,15 +380,9 @@ public class UIController {
 
     private float getProbability(ComboBox<Integer> comboBox, float defaultValue) {
         if (comboBox.getValue() == null) {
-            System.out.println("Default probability due to null: " + defaultValue);
             return defaultValue;
         }
-        int value = comboBox.getValue();
-        System.out.println("Combo box value: " + value);
-        float probability = value * 0.01f;
-        float probabilityRoundedUp = (float) Math.ceil(probability * 100) / 100f;
-        System.out.println("Calculated probability rounded up: " + probabilityRoundedUp);
-        return probabilityRoundedUp;
+        return (float) Math.ceil(comboBox.getValue() * 0.01f * 100) / 100f;
     }
 
 
@@ -464,9 +463,9 @@ public class UIController {
             comboProbWar.getSelectionModel().select(Integer.valueOf((int) (warriorAntP2 * 100)));
             comboProbWork.getSelectionModel().select(Integer.valueOf((int) (workerAntP1 * 100)));
 
-
-            workerAI.setSelected(workerAntN1 < 0);
-            warriorAI.setSelected(warriorAntN2 < 0);
+//            boolean workerAI1, boolean warriorAI1
+//            workerAI.setSelected(workerAI1);
+//            warriorAI.setSelected(warriorAI1);
 
             habitat.setCurrentTimeSimulation(currentTimeSimulation);
             Habitat.startTime = currentTimeSimulation;
@@ -475,18 +474,14 @@ public class UIController {
     }
 
 
-
-
     @FXML
     private void handleSaveSimulation() {
-        SingletonDynamicArray.getInstance().getConfig().saveInFileState();
+        showSaveConfirmationDialog();
     }
 
     @FXML
     private void handleLoadSimulation() {
-        if (Habitat.simulationActive)
-            habitat.stopSimulation();
-        SingletonDynamicArray.getInstance().getConfig().loadFromFile();
+        showConfirmationDialog();
     }
 
     @FXML
@@ -497,5 +492,39 @@ public class UIController {
         }
         HelloApplication.instance.console.show();
     }
+
+    private void showConfirmationDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Download the simulation", ButtonType.YES, ButtonType.NO);
+        alert.setTitle("Load Simulation");
+        alert.setHeaderText(null);
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                if (Habitat.simulationActive) {
+                    habitat.stopSimulation();
+                    PauseTransition pause = new PauseTransition(Duration.millis(100));
+                    pause.setOnFinished(event -> {
+                        SingletonDynamicArray.getInstance().getConfig().loadFromFile();
+                    });
+                    pause.play();
+                } else {
+                    SingletonDynamicArray.getInstance().getConfig().loadFromFile();
+
+                }
+            }
+        });
+    }
+    private void showSaveConfirmationDialog() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Save the current simulation", ButtonType.YES, ButtonType.NO);
+        alert.setTitle("Save Simulation");
+        alert.setHeaderText(null);
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                SingletonDynamicArray.getInstance().getConfig().saveInFile();
+            }
+        });
+    }
+
+
+
 
 }

@@ -72,22 +72,13 @@ public class WorkerAntAI extends BaseAI {
         }
 
     }
+
+
 }
 
 
 
 
-//    @Override
-//    public void run() {
-//        super.run();
-//        timer = new Timer();
-//        timer.scheduleAtFixedRate(new TimerTask() {
-//            @Override
-//            public void run() {
-//                if (isActive) update();
-//            }
-//        }, 0, 100);
-//    }
 
 
 

@@ -13,7 +13,6 @@ public abstract class Ant implements Serializable {
     private long lifetime;
     private int id;
 
-
     public int getId() {
         return id;
     }
@@ -73,5 +72,15 @@ public abstract class Ant implements Serializable {
     public void setBirthPosition(double x, double y) {
         this.birthX = x;
         this.birthY = y;
+    }
+
+    private boolean isLoadedFromSave = false;
+
+    public boolean isLoadedFromSave() {
+        return isLoadedFromSave;
+    }
+
+    public void setLoadedFromSave(boolean loadedFromSave) {
+        isLoadedFromSave = loadedFromSave;
     }
 }

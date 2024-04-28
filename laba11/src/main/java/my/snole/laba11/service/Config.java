@@ -3,22 +3,27 @@ package my.snole.laba11.service;
 import java.io.Serializable;
 
 import java.io.*;
-import java.util.ArrayList;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import my.snole.laba11.Habitat;
 import my.snole.laba11.UIController.UIController;
 import my.snole.laba11.model.SingletonDynamicArray;
+import my.snole.laba11.model.ant.AI.WorkerAntAI;
 import my.snole.laba11.model.ant.Ant;
 
 public class Config implements Serializable {
     private Habitat habitat;
     private UIController uiController;
     public static boolean isLoadedFromSave = false;
+    private File file = new File("serialized.dat");
+    private long loadedSimulationTime;
+    WorkerAntAI workerAntAI;
 
-    public synchronized void saveInFileState() {
+    public synchronized void saveInFile() {
         try (FileOutputStream fileOutputStream = new FileOutputStream("config.txt");
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
 
@@ -29,12 +34,13 @@ public class Config implements Serializable {
             objectOutputStream.writeObject(habitat.getWarriorAntP2());
             objectOutputStream.writeObject(habitat.getWorkLifeTime());
             objectOutputStream.writeObject(habitat.getWarLifeTime());
-            objectOutputStream.writeObject(SingletonDynamicArray.getInstance().getAntsList());
+            objectOutputStream.writeObject(habitat.getLoadTIme());
+
+            saveAntsListToFile();
         } catch (FileNotFoundException e) {
             showAlert("Error! Config file not found!");
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Сохранение прошло с ошибкой IOException");
             showAlert("Error writing to config file!");
         }
     }
@@ -51,32 +57,70 @@ public class Config implements Serializable {
             float warriorAntP2 = (float) objectInputStream.readObject();
             long workLifeTime = (long) objectInputStream.readObject();
             long warLifeTime = (long) objectInputStream.readObject();
-            ConcurrentLinkedQueue<Ant> ants = (ConcurrentLinkedQueue<Ant>) objectInputStream.readObject();
+            loadedSimulationTime = (long) objectInputStream.readObject();
 
             isLoadedFromSave = true;
 
             uiController.setSimulationParameters(time, workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime);
 
-            SingletonDynamicArray.getInstance().setAntsList(new ConcurrentLinkedQueue<>());
-
-            SingletonDynamicArray.getInstance().setHabitat(habitat);
-            for (Ant ant : ants) {
-                habitat.restoreAntImageView(ant);
-            }
+            loadAntsListFromFile();
 
         } catch (IOException | ClassNotFoundException e) {
-
             showAlert("Error loading config file: " + e.getMessage());
         }
     }
 
+    public synchronized void saveAntsListToFile() {
+        try (FileOutputStream fos = new FileOutputStream(file);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(SingletonDynamicArray.getInstance().getAntsList());
+        } catch (IOException e) {
+            showAlert("Error writing ants to file!");
+        }
+    }
+
+//    public synchronized void loadAntsListFromFile() {
+//        try (FileInputStream fis = new FileInputStream(file);
+//             ObjectInputStream ois = new ObjectInputStream(fis)) {
+//            ConcurrentLinkedQueue<Ant> ants = (ConcurrentLinkedQueue<Ant>) ois.readObject();
+//
+//            SingletonDynamicArray.getInstance().setHabitat(habitat);
+//
+//            SingletonDynamicArray.getInstance().setAntsList(ants);
+//
+//            for (Ant ant : ants) {
+//                habitat.restoreAntImageView(ant);
+//            }
+//
+//        } catch (IOException | ClassNotFoundException e) {
+//            showAlert("Error loading ants from file: " + e.getMessage());
+//        }
+//    }
+    public synchronized void loadAntsListFromFile() {
+        try (FileInputStream fis = new FileInputStream(file);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            ConcurrentLinkedQueue<Ant> ants = (ConcurrentLinkedQueue<Ant>) ois.readObject();
+            SingletonDynamicArray.getInstance().setHabitat(habitat);
+
+            for (Ant ant : ants) {
+                long timeSinceSave = System.currentTimeMillis() - loadedSimulationTime;
+                ant.setBirthTime(ant.getBirthTime() + timeSinceSave);
+                habitat.restoreAntImageView(ant);
+            }
+            SingletonDynamicArray.getInstance().setAntsList(ants);
+        } catch (IOException | ClassNotFoundException e) {
+            showAlert("Error loading ants from file: " + e.getMessage());
+        }
+    }
 
     private void showAlert(String message) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("An error occurred.");
+            alert.showAndWait();
+        });
     }
 
     public void setHabitat(Habitat habitat) {

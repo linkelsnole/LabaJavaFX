@@ -5,13 +5,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import my.snole.laba11.AliveAntsDialog;
 import my.snole.laba11.Habitat;
 
 import java.io.IOException;
@@ -42,15 +38,11 @@ public class Console {
             e.printStackTrace();
         }
     }
-
-
     public void show() {
         if (stage != null) {
             stage.show();
         }
     }
-
-
     @FXML
     private void processCommand() {
         String command = textField.getText().trim();
@@ -71,8 +63,6 @@ public class Console {
             }
         });
     }
-
-
 
     private void appendText(String text) {
         textArea.appendText(text);

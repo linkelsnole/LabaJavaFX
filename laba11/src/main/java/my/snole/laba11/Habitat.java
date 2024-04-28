@@ -34,14 +34,16 @@ public class Habitat  {
     private Pane scenePane;
     private HabitatListener listener;
     public SimulationStateListener stateListener;
-    private WarriorAntAI warriorAntAI;
-    private WorkerAntAI workerAntAI;
+    public WarriorAntAI warriorAntAI;
+    public WorkerAntAI workerAntAI;
     private long workerAntN1;
     private long warriorAntN2;
     private float workerAntP1;
     private float warriorAntP2;
     private long workLifeTime;
     private long warLifeTime;
+    private Image imageWork = new Image(getClass().getResourceAsStream("/image/worker.png"));
+    private Image imageWar = new Image(getClass().getResourceAsStream("/image/war.png"));
 
 
 
@@ -62,7 +64,11 @@ public class Habitat  {
     }
 
 
+    public long getLoadTIme() {
+        return loadTIme;
+    }
 
+    private long loadTIme;
 
     public void update(long time, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2, long workLifeTime, long warLifeTime) {
         if (!simulationActive) {
@@ -74,7 +80,7 @@ public class Habitat  {
         this.warriorAntP2 = warriorAntP2;
         this.workLifeTime = workLifeTime;
         this.warLifeTime = warLifeTime;
-//        currentTimeSimulation = time;
+        loadTIme = time;
         long currentTime = System.currentTimeMillis();
 
         list.removeExpiredElements(currentTime, scenePane);
@@ -104,6 +110,7 @@ public class Habitat  {
     }
 
 
+
     private void setAnt(Ant ant) {
         Point point = service.generateRandomPoint();
         ImageView imageView = new ImageView(ant.getImage());
@@ -118,23 +125,11 @@ public class Habitat  {
         }
     }
 
-    public void restoreAnts(ConcurrentLinkedQueue<Ant> ants) {
-        for (Ant ant : ants) {
-            ImageView imageView = new ImageView(ant.getImage());
-            imageView.setLayoutX(ant.getBirthX());
-            imageView.setLayoutY(ant.getBirthY());
-            imageView.setVisible(true);
-            scenePane.getChildren().add(imageView);
-            ant.setImageView(imageView);
-        }
 
-    }
-
-    private Image imageWork = new Image(getClass().getResourceAsStream("/image/worker.png"));
-    private Image imageWar = new Image(getClass().getResourceAsStream("/image/war.png"));
-    public void restoreAntImageView(Ant ant) {    if (ant.getBirthX() != 0 && ant.getBirthY() != 0) {
-        ImageView imageView = new ImageView(ant instanceof WorkerAnt ? imageWork : imageWar);        imageView.setX(ant.getBirthX());
-        imageView.setY(ant.getBirthY());
+    public void restoreAntImageView(Ant ant) { if (ant.getBirthX() != 0 && ant.getBirthY() != 0) {
+        ImageView imageView = new ImageView(ant instanceof WorkerAnt ? imageWork : imageWar);
+        imageView.setLayoutX(ant.getBirthX());
+        imageView.setLayoutY(ant.getBirthY());
         imageView.setVisible(true);
         scenePane.getChildren().add(imageView);
         ant.setImageView(imageView);
@@ -144,7 +139,6 @@ public class Habitat  {
         eKeyPressed = false;
         if (Config.isLoadedFromSave) {
             startTime = System.currentTimeMillis() - currentTimeSimulation;
-//            service.generateTimeString(isSimulationStopped, stoptime, startTime);
             Config.isLoadedFromSave = false;
         } else {
             startTime = System.currentTimeMillis();
@@ -221,6 +215,8 @@ public class Habitat  {
             workerAntAI.stopAI();
         }
     }
+
+
 
     public long getCurrentTimeSimulation() {
         return currentTimeSimulation;
