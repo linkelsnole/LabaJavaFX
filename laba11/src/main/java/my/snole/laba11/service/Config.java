@@ -44,6 +44,7 @@ public class Config implements Serializable {
 
             saveAntsListToFile();
 
+
         } catch (FileNotFoundException e) {
             showAlert("Error! Config file not found!");
         } catch (IOException e) {

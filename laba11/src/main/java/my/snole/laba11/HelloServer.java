@@ -1,0 +1,33 @@
+package my.snole.laba11;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+
+public class HelloServer extends Application {
+    private Stage primaryStage;
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        primaryStage = stage;
+        FXMLLoader loader = new FXMLLoader(HelloServer.class.getResource("server.fxml"));
+        Pane root = loader.load();
+
+
+        Scene scene = new Scene(root);
+        stage.setTitle("Ant Simulation Server");
+        stage.setResizable(false);
+        stage.setScene(scene);
+
+
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+
