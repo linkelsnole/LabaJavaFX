@@ -32,6 +32,7 @@ public class Server {
     private Thread thread;
     private ArrayList<ServerClient> clients = new ArrayList<>();
     private boolean serverRunning = false;
+
     private int port;
 
     @FXML
@@ -88,7 +89,7 @@ public class Server {
         });
     }
 
-    private void startServer() {
+    private synchronized void startServer() {
         try {
             serverSocket = new ServerSocket(port);
             thread = new Thread(() -> {

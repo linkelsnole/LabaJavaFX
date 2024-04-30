@@ -1,6 +1,7 @@
 package my.snole.laba11;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -16,13 +17,16 @@ public class HelloServer extends Application {
         FXMLLoader loader = new FXMLLoader(HelloServer.class.getResource("server.fxml"));
         Pane root = loader.load();
 
-
         Scene scene = new Scene(root);
         stage.setTitle("Ant Simulation Server");
         stage.setResizable(false);
+
+        stage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
+
         stage.setScene(scene);
-
-
         stage.show();
     }
 

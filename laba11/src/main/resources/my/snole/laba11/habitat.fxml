@@ -24,27 +24,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import java.lang.Float?>
 <AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.UIController.UIController">
     <children>
         <Label fx:id="label" />
-        <MenuBar prefHeight="32.0" prefWidth="807.0">
-            <menus>
-                <Menu mnemonicParsing="false" text="Menu">
-                    <items>
-                        <MenuItem mnemonicParsing="false" onAction="#handleStart" text="Start" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleStop" text="Stop" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="View">
-                    <items>
-                        <CheckMenuItem fx:id="showSummaryMenuItem" mnemonicParsing="false" onAction="#handleShowSummaryAction" text="Show Summary" />
-                        <RadioMenuItem fx:id="showTimeMenuItem" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Show Time" />
-                        <RadioMenuItem fx:id="hideTimeMenuItem" mnemonicParsing="false" onAction="#handleHideInformationAction" text="Hide Time" />
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
       <TabPane layoutX="807.0" prefHeight="640.0" prefWidth="293.0" style="-fx-background-color: #696969;" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="     Main     ">
@@ -86,7 +68,7 @@
                               <Font name="Verdana Bold" size="14.0" />
                            </font>
                         </Button>
-                        <Button fx:id="saveSimulationButton" onAction="#handleSaveSimulation" disable="false" layoutX="48.0" layoutY="182.0" mnemonicParsing="false"  prefHeight="33.0" prefWidth="191.0" text="Save simulation">
+                        <Button fx:id="saveSimulationButton" disable="false" layoutX="48.0" layoutY="182.0" mnemonicParsing="false" onAction="#handleSaveSimulation" prefHeight="33.0" prefWidth="191.0" text="Save simulation">
                            <effect>
                               <Blend />
                            </effect>
@@ -97,7 +79,7 @@
                               <Tooltip text="Начать симуляцию" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="loadSimulationButton" onAction="#handleLoadSimulation" disable="false" layoutX="48.0" layoutY="223.0" mnemonicParsing="false"  prefHeight="33.0" prefWidth="191.0" text="Load simulation">
+                        <Button fx:id="loadSimulationButton" disable="false" layoutX="48.0" layoutY="223.0" mnemonicParsing="false" onAction="#handleLoadSimulation" prefHeight="33.0" prefWidth="191.0" text="Load simulation">
                            <effect>
                               <Blend />
                            </effect>
@@ -231,7 +213,24 @@
           </Tab>
         </tabs>
       </TabPane>
-      <Pane fx:id="scenePane" layoutY="31.0" prefHeight="609.0" prefWidth="807.0" />
+      <Pane fx:id="scenePane" layoutY="33.0" prefHeight="607.0" prefWidth="807.0" />
+        <MenuBar prefHeight="32.0" prefWidth="807.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="Menu">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#handleStart" text="Start" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleStop" text="Stop" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="View">
+                    <items>
+                        <CheckMenuItem fx:id="showSummaryMenuItem" mnemonicParsing="false" onAction="#handleShowSummaryAction" text="Show Summary" />
+                        <RadioMenuItem fx:id="showTimeMenuItem" mnemonicParsing="false" onAction="#handleShowInformationAction" text="Show Time" />
+                        <RadioMenuItem fx:id="hideTimeMenuItem" mnemonicParsing="false" onAction="#handleHideInformationAction" text="Hide Time" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
 
     </children>
 </AnchorPane>

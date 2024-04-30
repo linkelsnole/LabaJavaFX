@@ -10,6 +10,7 @@ import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.model.ant.Ant;
 import my.snole.laba11.model.ant.WarriorAnt;
 import my.snole.laba11.model.ant.WorkerAnt;
+import my.snole.laba11.server.Client;
 import my.snole.laba11.service.Config;
 import my.snole.laba11.service.UIService;
 import javafx.scene.layout.AnchorPane;
@@ -44,6 +45,8 @@ public class Habitat  {
     private long warLifeTime;
     private Image imageWork = new Image(getClass().getResourceAsStream("/image/worker.png"));
     private Image imageWar = new Image(getClass().getResourceAsStream("/image/war.png"));
+
+    public Client client = new Client(this);
 
 
 
