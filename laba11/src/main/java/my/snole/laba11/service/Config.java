@@ -25,7 +25,6 @@ public class Config implements Serializable {
 
     /**
      * Сериализует текущее состояние симуляции в файл [[config.txt]]
-     * * Метод  {@link #saveAntsListToFile()} для объектов
      */
     public synchronized void saveInFile() {
         try (FileOutputStream fileOutputStream = new FileOutputStream("config.txt");
@@ -42,7 +41,6 @@ public class Config implements Serializable {
             objectOutputStream.writeObject(uiController.workerAI.isSelected());
             objectOutputStream.writeObject(uiController.warriorAI.isSelected());
 
-            saveAntsListToFile();
 
         } catch (FileNotFoundException e) {
             showAlert("Error! Config file not found!");
@@ -55,7 +53,6 @@ public class Config implements Serializable {
 
     /**
      * Десериализует состояние симуляции из файла [[config.txt]].
-     * ! Метод {@link #loadAntsListFromFile()} для объектов
      */
     public synchronized void loadFromFile() {
         try (FileInputStream fileInputStream = new FileInputStream("config.txt");
@@ -76,7 +73,6 @@ public class Config implements Serializable {
 
             uiController.setSimulationParameters(time, workerAntN1, warriorAntN2, workerAntP1, warriorAntP2, workLifeTime, warLifeTime, workerAI, warriorAi);
 
-            loadAntsListFromFile();
 
         } catch (IOException | ClassNotFoundException e) {
             showAlert("Error loading config file: " + e.getMessage());
@@ -86,7 +82,7 @@ public class Config implements Serializable {
     /**
      * Сериализует список муравьёв в файл
      */
-    public synchronized void saveAntsListToFile() {
+    public synchronized void saveAntsListToFile(File file) {
         try (FileOutputStream fos = new FileOutputStream(file);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(SingletonDynamicArray.getInstance().getAntsList());
@@ -98,7 +94,7 @@ public class Config implements Serializable {
     /**
      * Десериализует список муравьёв из файла и обновляет текущий список
      */
-    public synchronized void loadAntsListFromFile() {
+    public synchronized void loadAntsListFromFile(File file) {
         try (FileInputStream fis = new FileInputStream(file);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
             ConcurrentLinkedQueue<Ant> ants = (ConcurrentLinkedQueue<Ant>) ois.readObject();

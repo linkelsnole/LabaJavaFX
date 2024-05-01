@@ -16,6 +16,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -33,6 +34,7 @@ import my.snole.laba11.service.Config;
 import my.snole.laba11.service.Console;
 import my.snole.laba11.service.UIService;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
@@ -473,15 +475,39 @@ public class UIController {
         });
     }
 
-
     @FXML
-    private void handleSaveSimulation() {
-        showSaveConfirmationDialog();
+    private void handleSaveSimulation(MouseEvent event) {
+        Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Habitat.simulationActive = false;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Simulation Ants");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Data Files", "*.dat"));
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            SingletonDynamicArray.getInstance().getConfig().saveAntsListToFile(file);
+        }
+        Habitat.simulationActive = true;
     }
 
     @FXML
-    private void handleLoadSimulation() {
-        showConfirmationDialog();
+    private void handleLoadSimulation(MouseEvent event) {
+        Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load Simulation Ants");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Data Files", "*.dat"));
+        File file = fileChooser.showOpenDialog(primaryStage);
+        if (Habitat.simulationActive) {
+            habitat.stopSimulation();
+            PauseTransition pause = new PauseTransition(Duration.millis(50));
+            pause.setOnFinished(e -> {
+                if (file != null) {
+                    SingletonDynamicArray.getInstance().getConfig().loadAntsListFromFile(file);
+                }
+            });
+            pause.play();
+        } else if (file != null) {
+            SingletonDynamicArray.getInstance().getConfig().loadAntsListFromFile(file);
+        }
     }
 
     @FXML
@@ -493,36 +519,6 @@ public class UIController {
         HelloApplication.instance.console.show();
     }
 
-    private void showConfirmationDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Download the simulation", ButtonType.YES, ButtonType.NO);
-        alert.setTitle("Load Simulation");
-        alert.setHeaderText(null);
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
-                if (Habitat.simulationActive) {
-                    habitat.stopSimulation();
-                    PauseTransition pause = new PauseTransition(Duration.millis(100));
-                    pause.setOnFinished(event -> {
-                        SingletonDynamicArray.getInstance().getConfig().loadFromFile();
-                    });
-                    pause.play();
-                } else {
-                    SingletonDynamicArray.getInstance().getConfig().loadFromFile();
-
-                }
-            }
-        });
-    }
-    private void showSaveConfirmationDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Save the current simulation", ButtonType.YES, ButtonType.NO);
-        alert.setTitle("Save Simulation");
-        alert.setHeaderText(null);
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
-                SingletonDynamicArray.getInstance().getConfig().saveInFile();
-            }
-        });
-    }
 
 
 
