@@ -6,7 +6,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.server.Server">
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="my.snole.laba11.server.Server"
+            prefHeight="400.0" prefWidth="600.0">
     <children>
         <TextArea fx:id="textArea" layoutX="14.0" layoutY="14.0" prefHeight="442.0" prefWidth="582.0" />
         <Button fx:id="buttonOn" layoutX="614.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleButtonOn" text="On" />
@@ -15,3 +18,4 @@
         <Button fx:id="buttonPort" layoutX="614.0" layoutY="134.0" mnemonicParsing="false" onAction="#handleButtonPort" text="Set port" />
     </children>
 </AnchorPane>
+

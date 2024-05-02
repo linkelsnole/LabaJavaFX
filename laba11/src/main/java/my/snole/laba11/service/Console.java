@@ -8,7 +8,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import my.snole.laba11.Habitat;
-import my.snole.laba11.server.Client;
 
 import java.io.IOException;
 
@@ -19,7 +18,6 @@ public class Console {
     private TextField textField;
     private Stage stage;
     private Habitat habitat;
-    private Client client;
 
     /**
      *  Контруктор с параметрами
@@ -28,7 +26,6 @@ public class Console {
      */
     public Console(Stage owner, Habitat habitat) {
         this.habitat = habitat;
-//        this.client = new Client(habitat);
         FXMLLoader loader = new FXMLLoader(Console.class.getResource("/my/snole/laba11/console.fxml"));
         loader.setController(this);
         try {
@@ -43,7 +40,7 @@ public class Console {
     }
 
     /**
-     * Обрабатывает команды ввода пользователя и выполняет соответствующие действия
+     * Обрабатывает команды ввода пользователя(start; stop) и выполняет соответствующие действия
      */
     @FXML
     private void processCommand() {
@@ -77,7 +74,6 @@ public class Console {
             }
         });
     }
-
     public void show() {
         if (stage != null) {
             stage.show();

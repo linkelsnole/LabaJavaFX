@@ -77,12 +77,7 @@ public class Habitat  {
         if (!simulationActive) {
             return;
         }
-        this.workerAntN1 = workerAntN1;
-        this.warriorAntN2 = warriorAntN2;
-        this.workerAntP1 = workerAntP1;
-        this.warriorAntP2 = warriorAntP2;
-        this.workLifeTime = workLifeTime;
-        this.warLifeTime = warLifeTime;
+
         loadTIme = time;
         long currentTime = System.currentTimeMillis();
 
@@ -225,29 +220,6 @@ public class Habitat  {
         return currentTimeSimulation;
     }
 
-    public long getWorkerAntN1() {
-        return workerAntN1;
-    }
-
-    public long getWarriorAntN2() {
-        return warriorAntN2;
-    }
-
-    public float getWorkerAntP1() {
-        return workerAntP1;
-    }
-
-    public float getWarriorAntP2() {
-        return warriorAntP2;
-    }
-
-    public long getWorkLifeTime() {
-        return workLifeTime;
-    }
-
-    public long getWarLifeTime() {
-        return warLifeTime;
-    }
 
     public void setCurrentTimeSimulation(long currentTimeSimulation) {
         this.currentTimeSimulation = currentTimeSimulation;

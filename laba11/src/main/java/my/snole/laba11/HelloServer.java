@@ -34,4 +34,3 @@ public class HelloServer extends Application {
         launch(args);
     }
 }
-

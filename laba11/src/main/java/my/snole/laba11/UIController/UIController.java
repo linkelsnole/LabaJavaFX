@@ -16,6 +16,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -33,6 +34,7 @@ import my.snole.laba11.service.Config;
 import my.snole.laba11.service.Console;
 import my.snole.laba11.service.UIService;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
@@ -94,6 +96,13 @@ public class UIController {
     private BaseAI baseAI;
     Config config;
 
+    float workerAntP1;
+    float warriorAntP2;
+    int workerAntN1;
+    int warriorAntN2;
+    long workLifeTime;
+    long warLifeTime;
+
 
     private TimerTask createTimerTask() {
         float workerAntP1 = getProbability(comboProbWork, 70);
@@ -119,6 +128,7 @@ public class UIController {
     private void initialize() {
 
         habitat = new Habitat(scenePane);
+        SingletonDynamicArray.getInstance().getConfig().setUIController(this);
         habitat.setSimulationStateListener(new Habitat.SimulationStateListener() {
             @Override
             public void onSimulationStarted() {
@@ -150,25 +160,41 @@ public class UIController {
         });
 
         initializeMenuBindings();
+        setupListeners();
 
-        //4 лаба
-        setupPriorityComboBox(workerAntPriorityComboBox, newVal -> habitat.changeWorkerAntPriority(newVal));
-        setupPriorityComboBox(warriorAntPriorityComboBox, newVal -> habitat.changeWarriorAntPriority(newVal));
+    }
 
-        workerAI.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
-            if (Habitat.simulationActive) {
-                habitat.toggleWorkerAntAI(isSelected);
-            }
+    private void setupListeners() {
+        timeTextWork.textProperty().addListener((obs, oldVal, newVal) -> {
+            workerAntN1 = parseInputOrUseDefault(timeTextWork, 2);
+            SingletonDynamicArray.getInstance().getConfig().saveInFile();
         });
-
-        warriorAI.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
-            if (Habitat.simulationActive) {
-                habitat.toggleWarriorAntAI(isSelected);
-            }
+        timeTextWar.textProperty().addListener((obs, oldVal, newVal) -> {
+            warriorAntN2 = parseInputOrUseDefault(timeTextWar, 2);
+            SingletonDynamicArray.getInstance().getConfig().saveInFile();
         });
-
-        SingletonDynamicArray.getInstance().getConfig().setUIController(this);
-
+        lifeTimeTextWork.textProperty().addListener((obs, oldVal, newVal) -> {
+            workLifeTime = parseInputOrUseDefault(lifeTimeTextWork, 10);
+            SingletonDynamicArray.getInstance().getConfig().saveInFile();
+        });
+        lifeTimeTextWar.textProperty().addListener((obs, oldVal, newVal) -> {
+            warLifeTime = parseInputOrUseDefault(lifeTimeTextWar, 12);
+            SingletonDynamicArray.getInstance().getConfig().saveInFile();
+        });
+        comboProbWork.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) workerAntP1 = getProbability(comboProbWork, 80);
+            SingletonDynamicArray.getInstance().getConfig().saveInFile();
+        });
+        comboProbWar.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) warriorAntP2 = getProbability(comboProbWar, 80);
+            SingletonDynamicArray.getInstance().getConfig().saveInFile();
+        });
+//        workerAI.selectedProperty().addListener((obs, oldVal, isSelected) -> {
+//            workerAI.isSelected();
+//        });
+//        warriorAI.selectedProperty().addListener((obs, oldVal, isSelected) -> {
+//            warriorAI.isSelected();
+//        });
     }
 
 
@@ -387,6 +413,10 @@ public class UIController {
 
 
     private int parseInputOrUseDefault(TextField textField, int defaultValue) {
+        String text = textField.getText();
+        if (text.isEmpty()) {
+            return defaultValue;
+        }
         try {
             return service.parseInput(textField.getText());
         } catch (IllegalArgumentException e) {
@@ -412,6 +442,20 @@ public class UIController {
         comboProbWar.setValue(90);
         workerAntPriorityComboBox.setValue(Thread.NORM_PRIORITY);
         warriorAntPriorityComboBox.setValue(Thread.NORM_PRIORITY);
+        setupPriorityComboBox(workerAntPriorityComboBox, newVal -> habitat.changeWorkerAntPriority(newVal));
+        setupPriorityComboBox(warriorAntPriorityComboBox, newVal -> habitat.changeWarriorAntPriority(newVal));
+
+        workerAI.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (Habitat.simulationActive) {
+                habitat.toggleWorkerAntAI(isSelected);
+            }
+        });
+
+        warriorAI.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (Habitat.simulationActive) {
+                habitat.toggleWarriorAntAI(isSelected);
+            }
+        });
     }
 
     private void setButtonsStopped() {
@@ -453,7 +497,7 @@ public class UIController {
     }
 
 
-    public void setSimulationParameters(long currentTimeSimulation, long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2, long workLifeTime, long warLifeTime, boolean workerAI1, boolean warriorAI1) {
+    public void setSimulationParameters(long workerAntN1, long warriorAntN2, float workerAntP1, float warriorAntP2, long workLifeTime, long warLifeTime, boolean workerAI1, boolean warriorAI1) {
         Platform.runLater(() -> {
             timeTextWork.setText(String.valueOf(workerAntN1));
             timeTextWar.setText(String.valueOf(warriorAntN2));
@@ -466,22 +510,47 @@ public class UIController {
 
             workerAI.setSelected(workerAI1);
             warriorAI.setSelected(warriorAI1);
-
-            habitat.setCurrentTimeSimulation(currentTimeSimulation);
-            Habitat.startTime = currentTimeSimulation;
-
         });
     }
 
-
-    @FXML
-    private void handleSaveSimulation() {
-        showSaveConfirmationDialog();
+    public void setTimeUntilLoadAnts (long currentTimeSimulation) {
+        habitat.setCurrentTimeSimulation(currentTimeSimulation);
+        Habitat.startTime = currentTimeSimulation;
     }
 
     @FXML
-    private void handleLoadSimulation() {
-        showConfirmationDialog();
+    private void handleSaveSimulation(MouseEvent event) {
+        Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Habitat.simulationActive = false;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Simulation Ants");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Data Files", "*.dat"));
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            SingletonDynamicArray.getInstance().getConfig().saveAntsListToFile(file);
+        }
+        Habitat.simulationActive = true;
+    }
+
+    @FXML
+    private void handleLoadSimulation(MouseEvent event) {
+        Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load Simulation Ants");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Data Files", "*.dat"));
+        File file = fileChooser.showOpenDialog(primaryStage);
+        if (Habitat.simulationActive) {
+            habitat.stopSimulation();
+            PauseTransition pause = new PauseTransition(Duration.millis(50));
+            pause.setOnFinished(e -> {
+                if (file != null) {
+                    SingletonDynamicArray.getInstance().getConfig().loadAntsListFromFile(file);
+                }
+            });
+            pause.play();
+        } else if (file != null) {
+            SingletonDynamicArray.getInstance().getConfig().loadAntsListFromFile(file);
+        }
     }
 
     @FXML
@@ -493,38 +562,30 @@ public class UIController {
         HelloApplication.instance.console.show();
     }
 
-    private void showConfirmationDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Download the simulation", ButtonType.YES, ButtonType.NO);
-        alert.setTitle("Load Simulation");
-        alert.setHeaderText(null);
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
-                if (Habitat.simulationActive) {
-                    habitat.stopSimulation();
-                    PauseTransition pause = new PauseTransition(Duration.millis(100));
-                    pause.setOnFinished(event -> {
-                        SingletonDynamicArray.getInstance().getConfig().loadFromFile();
-                    });
-                    pause.play();
-                } else {
-                    SingletonDynamicArray.getInstance().getConfig().loadFromFile();
 
-                }
-            }
-        });
-    }
-    private void showSaveConfirmationDialog() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Save the current simulation", ButtonType.YES, ButtonType.NO);
-        alert.setTitle("Save Simulation");
-        alert.setHeaderText(null);
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
-                SingletonDynamicArray.getInstance().getConfig().saveInFile();
-            }
-        });
+    public long getWorkerAntN1() {
+        return workerAntN1;
     }
 
+    public long getWarriorAntN2() {
+        return warriorAntN2;
+    }
 
+    public float getWorkerAntP1() {
+        return workerAntP1;
+    }
+
+    public float getWarriorAntP2() {
+        return warriorAntP2;
+    }
+
+    public long getWorkLifeTime() {
+        return workLifeTime;
+    }
+
+    public long getWarLifeTime() {
+        return warLifeTime;
+    }
 
 
 }
