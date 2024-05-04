@@ -14,7 +14,7 @@ public class HelloServer extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
-        FXMLLoader loader = new FXMLLoader(HelloServer.class.getResource("server.fxml"));
+        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("server.fxml"));
         Pane root = loader.load();
 
         Scene scene = new Scene(root);

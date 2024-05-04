@@ -148,7 +148,13 @@ public class Server {
                 while (connected) {
                     Object message = in.readObject();
                     if (message instanceof String) {
-                        handleClientMessage((String) message);
+                        String msg = (String) message;
+                        if (msg.startsWith("id:")) {
+                            this.id = Integer.parseInt(msg.substring(3)); //получили id из сообщения
+                            Platform.runLater(() -> textArea.appendText("Client " + this.id + " connected.\n"));
+                        } else {
+                            handleClientMessage(msg);
+                        }
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {

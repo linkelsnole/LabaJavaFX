@@ -16,4 +16,8 @@ module com.example.laba11 {
     opens my.snole.laba11.model to javafx.fxml;
     exports my.snole.laba11.model.ant.AI;
     opens my.snole.laba11.model.ant.AI to javafx.fxml;
+
+    opens my.snole.laba11.server to javafx.fxml;
+
+
 }
