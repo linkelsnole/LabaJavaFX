@@ -47,7 +47,13 @@ public class Habitat  {
     private Image imageWar = new Image(getClass().getResourceAsStream("/image/war.png"));
 
     public Client client = new Client(this);
-
+    private int id;
+    public int getId() {
+        return id;
+    }
+    public Client getClient() {
+        return client;
+    }
 
 
     // Интерфейсы
@@ -64,6 +70,7 @@ public class Habitat  {
     public Habitat(Pane scene) {
         this.scenePane = scene;
         SingletonDynamicArray.getInstance().getConfig().setHabitat(this);
+        id = client.getId();
     }
 
 

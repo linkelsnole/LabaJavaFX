@@ -24,8 +24,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import java.lang.Float?>
-<AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.UIController.UIController">
+<AnchorPane fx:id="scene" prefHeight="640.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="my.snole.laba11.UIController.UIController">
     <children>
         <Label fx:id="label" />
         <MenuBar prefHeight="32.0" prefWidth="807.0">
@@ -86,7 +85,7 @@
                               <Font name="Verdana Bold" size="14.0" />
                            </font>
                         </Button>
-                        <Button fx:id="saveSimulationButton" onMouseClicked="#handleSaveSimulation" disable="false" layoutX="48.0" layoutY="182.0" mnemonicParsing="false"  prefHeight="33.0" prefWidth="191.0" text="Save simulation">
+                        <Button fx:id="saveSimulationButton" disable="false" layoutX="48.0" layoutY="182.0" mnemonicParsing="false" onMouseClicked="#handleSaveSimulation" prefHeight="33.0" prefWidth="191.0" text="Save simulation">
                            <effect>
                               <Blend />
                            </effect>
@@ -97,7 +96,7 @@
                               <Tooltip text="Начать симуляцию" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="loadSimulationButton" onMouseClicked="#handleLoadSimulation" disable="false" layoutX="48.0" layoutY="223.0" mnemonicParsing="false"  prefHeight="33.0" prefWidth="191.0" text="Load simulation">
+                        <Button fx:id="loadSimulationButton" disable="false" layoutX="48.0" layoutY="223.0" mnemonicParsing="false" onMouseClicked="#handleLoadSimulation" prefHeight="33.0" prefWidth="191.0" text="Load simulation">
                            <effect>
                               <Blend />
                            </effect>
@@ -119,6 +118,16 @@
                               <Tooltip text="Начать симуляцию" />
                            </tooltip>
                         </Button>
+                        <Button fx:id="serverListButton" onAction="#handleServerListButton" layoutX="54.0" layoutY="543.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="179.0" text="Server List">
+                           <font>
+                              <Font name="Verdana" size="16.0" />
+                           </font>
+                        </Button>
+                        <Label fx:id="idServerLabel" layoutX="54.0" layoutY="410.0" prefHeight="20.0" prefWidth="176.0" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
                         </children>
                     </AnchorPane>
                </content>

@@ -70,6 +70,10 @@ public class Server {
         });
     }
 
+    public void showListServer () {
+
+    }
+
     @FXML
     private void handleButtonPort() {
         TextInputDialog dialog = new TextInputDialog("4000");
@@ -111,6 +115,23 @@ public class Server {
             serverRunning = false;
         }
     }
+    private void handleClientMessage(String message, ServerClient client) {
+        if (message.equals("request_client_list")) {
+            sendClientList(client);
+        }
+    }
+
+    private void sendClientList(ServerClient client) { // для ServerListButton
+        StringBuilder clientList = new StringBuilder("Client List:");
+        for (ServerClient cl : clients) {
+            clientList.append("\nClient ID: ").append(cl.getId()).append(" -> Port: ").append(cl.port);
+        }
+        try {
+            client.out.writeObject(clientList.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void stopServer() {
         try {
@@ -131,10 +152,12 @@ public class Server {
         ObjectInputStream in;
         ObjectOutputStream out;
         int id;
+        int port;
         boolean connected = true;
 
         ServerClient(Socket socket) {
             this.socket = socket;
+            this.port = socket.getPort();
             try {
                 out = new ObjectOutputStream(socket.getOutputStream());
                 in = new ObjectInputStream(socket.getInputStream());
@@ -150,7 +173,7 @@ public class Server {
                     if (message instanceof String) {
                         String msg = (String) message;
                         if (msg.startsWith("id:")) {
-                            this.id = Integer.parseInt(msg.substring(3)); //получили id из сообщения
+                            this.id = Integer.parseInt(msg.substring(3));
                             Platform.runLater(() -> textArea.appendText("Client " + this.id + " connected.\n"));
                         } else {
                             handleClientMessage(msg);
@@ -164,9 +187,13 @@ public class Server {
             }
         }
 
-        private void handleClientMessage(String message) {
+    private void handleClientMessage(String message) {
+        if (message.equals("request_client_list")) {
+            sendClientList(this);
+        } else {
             Platform.runLater(() -> textArea.appendText("Received from client: " + message + "\n"));
         }
+    }
 
         void close() {
             try {
@@ -178,6 +205,10 @@ public class Server {
                 Platform.runLater(() -> textArea.appendText("Error closing client connection: " + e.getMessage() + "\n"));
             }
         }
+        public int getId() {
+            return id;
+        }
+
     }
 
 }

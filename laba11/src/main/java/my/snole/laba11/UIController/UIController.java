@@ -3,9 +3,11 @@ package my.snole.laba11.UIController;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -103,6 +105,29 @@ public class UIController {
     long workLifeTime;
     long warLifeTime;
 
+    @FXML
+    private Button serverListButton;
+    @FXML
+    private Label idServerLabel;
+
+    public void updateServerId() {
+        Platform.runLater(() -> {
+            idServerLabel.setText("ID: " + String.valueOf(habitat.getId()));
+        });
+    }
+
+    @FXML
+    private void handleServerListButton() {
+        if (habitat.getClient().isConnected()) {
+            habitat.getClient().sendMessage("request_client_list");
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Connection Error");
+            alert.setHeaderText("Not Connected");
+            alert.setContentText("Client is not connected to the server.");
+            alert.showAndWait();
+        }
+    }
 
     private TimerTask createTimerTask() {
         float workerAntP1 = getProbability(comboProbWork, 70);
@@ -161,7 +186,7 @@ public class UIController {
 
         initializeMenuBindings();
         setupListeners();
-
+        updateServerId();
     }
 
     private void setupListeners() {

@@ -2,7 +2,7 @@ module com.example.laba11 {
     requires javafx.controls;
     requires javafx.fxml;
 
-    requires org.kordamp.bootstrapfx.core;
+//    requires org.kordamp.bootstrapfx.core;
 
     opens my.snole.laba11 to javafx.fxml;
     exports my.snole.laba11;
@@ -18,6 +18,7 @@ module com.example.laba11 {
     opens my.snole.laba11.model.ant.AI to javafx.fxml;
 
     opens my.snole.laba11.server to javafx.fxml;
+    exports my.snole.laba11.server;
 
 
 }

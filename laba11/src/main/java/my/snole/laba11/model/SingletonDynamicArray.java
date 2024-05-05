@@ -9,6 +9,7 @@ import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.ant.Ant;
 import my.snole.laba11.model.ant.WarriorAnt;
 import my.snole.laba11.model.ant.WorkerAnt;
+import my.snole.laba11.server.Client;
 import my.snole.laba11.service.Config;
 
 import java.util.*;

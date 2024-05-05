@@ -1,6 +1,7 @@
 package my.snole.laba11.server;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.model.ant.Ant;
 import my.snole.laba11.Habitat;
@@ -18,10 +19,13 @@ public class Client {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
+
     private boolean connected = false;
     private Thread thread;
     private Habitat habitat;
     SingletonDynamicArray singletonDynamicArray;
+
+
 
     public Client(Habitat habitat) {
         this.habitat = habitat;
@@ -58,13 +62,28 @@ public class Client {
             while (connected) {
                 Object obj = in.readObject();
                 if (obj instanceof String) {
-                    handleServerMessage((String) obj);
+                    String message = (String) obj;
+                    if (message.startsWith("Client List:")) {
+                        showClientListDialog(message.substring(12));//для ServerListButton
+                    } else {
+                        handleServerMessage(message);
+                    }
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
             Platform.runLater(() -> System.out.println("Connection error: " + e.getMessage()));
             disconnect();
         }
+    }
+
+    private void showClientListDialog(String clientList) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Connected Clients");
+            alert.setHeaderText(null);
+            alert.setContentText(clientList);
+            alert.showAndWait();
+        });
     }
 
     private void handleServerMessage(String message) {
@@ -90,11 +109,11 @@ public class Client {
         try {
             List<Ant> list = new ArrayList<>(SingletonDynamicArray.getInstance().getAntsList());
 
-            // Если список муравьёв меньше, чем запрошенное количество, отправляем все, что у нас есть
+            //если список муравьёв меньше, чем запрошенное кол-во, отправляем все что есть в симуляции
             if (list.size() <= numberOfAnts) {
                 out.writeObject(new ArrayList<>(list));
             } else {
-                // Иначе выбираем случайные элементы
+                //выбираем случайные элементы
                 Random random = new Random();
                 List<Ant> selectedAnts = random.ints(0, list.size()).distinct().limit(numberOfAnts)
                         .mapToObj(list::get).collect(Collectors.toList());
@@ -143,6 +162,12 @@ public class Client {
                 Platform.runLater(() -> System.out.println("Error closing connection: " + e.getMessage()));
             }
         }
+    }
+    public int getId() {
+        return id;
+    }
+    public boolean isConnected() {
+        return connected;
     }
 }
 
