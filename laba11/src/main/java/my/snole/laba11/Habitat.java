@@ -1,7 +1,9 @@
 package my.snole.laba11;
 
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import my.snole.laba11.UIController.UIController;
 import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.ant.AI.WarriorAntAI;
 import my.snole.laba11.model.ant.AI.WorkerAntAI;
@@ -11,11 +13,14 @@ import my.snole.laba11.model.ant.Ant;
 import my.snole.laba11.model.ant.WarriorAnt;
 import my.snole.laba11.model.ant.WorkerAnt;
 import my.snole.laba11.server.Client;
+import my.snole.laba11.server.Server;
 import my.snole.laba11.service.Config;
 import my.snole.laba11.service.UIService;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.image.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
@@ -54,8 +59,17 @@ public class Habitat  {
     public Client getClient() {
         return client;
     }
+    private UIController uiController;
 
+    public void updateClientListView(List<String> clients) {
+        Platform.runLater(() -> {
+            uiController.updateClientListView(clients);
+        });
+    }
 
+    public void setUIController(UIController controller) {
+        this.uiController = controller;
+    }
     // Интерфейсы
     public interface SimulationStateListener {
         void onSimulationStarted();

@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -63,10 +64,11 @@ public class Client {
                 Object obj = in.readObject();
                 if (obj instanceof String) {
                     String message = (String) obj;
+                    System.out.println("Message received: " + message);
                     if (message.startsWith("Client List:")) {
                         showClientListDialog(message.substring(12));//для ServerListButton
-                    } else {
                         handleServerMessage(message);
+                    } else {
                     }
                 }
             }
@@ -87,10 +89,12 @@ public class Client {
     }
 
     private void handleServerMessage(String message) {
-        String[] parts = message.split(":");
-        switch (parts[0]) {
-            case "list":
-                Platform.runLater(() -> updateClientList(parts[1]));
+        String[] parts = message.split(":", 2);
+        switch (parts[0].trim()) {
+            case "Client List":
+                List<String> clientDetails = Arrays.asList(parts[1].split(","));
+                habitat.updateClientListView(clientDetails);
+                System.out.println("Method Comppppl");
                 break;
             case "giveObject":
                 requestAnts(Integer.parseInt(parts[1]));
@@ -99,10 +103,6 @@ public class Client {
                 receiveAnts(parts[1]);
                 break;
         }
-    }
-
-    private void updateClientList(String clientData) {
-        // --TODO обновление пользовательского интерфейса с помощью нового списка клиентов
     }
 
     private void requestAnts(int numberOfAnts) {
@@ -158,6 +158,10 @@ public class Client {
                 if (out != null) out.close();
                 if (in != null) in.close();
                 if (socket != null) socket.close();
+                Platform.runLater(() -> {
+                    habitat.updateClientListView(new ArrayList<>());
+                    System.out.println("Client list cleared");
+                });
             } catch (IOException e) {
                 Platform.runLater(() -> System.out.println("Error closing connection: " + e.getMessage()));
             }

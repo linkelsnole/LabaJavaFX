@@ -109,6 +109,8 @@ public class UIController {
     private Button serverListButton;
     @FXML
     private Label idServerLabel;
+    @FXML
+    private ListView<String> clientListView;
 
     public void updateServerId() {
         Platform.runLater(() -> {
@@ -116,6 +118,13 @@ public class UIController {
         });
     }
 
+    public void updateClientListView(List<String> clients) {
+        Platform.runLater(() -> {
+            System.out.println("метод updateClientListView вызывает");
+            habitat.getClient().sendMessage("list");
+            clientListView.getItems().setAll(clients);
+        });
+    }
     @FXML
     private void handleServerListButton() {
         if (habitat.getClient().isConnected()) {
@@ -153,6 +162,7 @@ public class UIController {
     private void initialize() {
 
         habitat = new Habitat(scenePane);
+        habitat.setUIController(this);
         SingletonDynamicArray.getInstance().getConfig().setUIController(this);
         habitat.setSimulationStateListener(new Habitat.SimulationStateListener() {
             @Override

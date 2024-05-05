@@ -6,12 +6,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputDialog;
+import my.snole.laba11.Habitat;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -117,19 +120,23 @@ public class Server {
     }
     private void handleClientMessage(String message, ServerClient client) {
         if (message.equals("request_client_list")) {
-            sendClientList(client);
+            sendClientList();
         }
     }
 
-    private void sendClientList(ServerClient client) { // для ServerListButton
-        StringBuilder clientList = new StringBuilder("Client List:");
-        for (ServerClient cl : clients) {
-            clientList.append("\nClient ID: ").append(cl.getId()).append(" -> Port: ").append(cl.port);
+    private void sendClientList() {
+        ArrayList<String> clientDetails = new ArrayList<>();
+        for (ServerClient client : clients) {
+            clientDetails.add("Client ID: " + client.getId() + " -> Port: " + client.socket.getPort());
         }
-        try {
-            client.out.writeObject(clientList.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
+        String clientListStr = String.join(",", clientDetails);
+        for (ServerClient client : clients) {
+            try {
+                client.out.writeObject("Client List:" + clientListStr);
+            } catch (IOException e) {
+                System.out.println("Failed to send client list to: " + client.getId());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -142,8 +149,22 @@ public class Server {
             clients.clear();
             serverSocket.close();
             thread.interrupt();
+            sendClientListUpdate(new ArrayList<>());
         } catch (IOException e) {
             Platform.runLater(() -> textArea.appendText("Error stopping server: " + e.getMessage() + "\n"));
+        }
+    }
+    /**
+     * Метод для отправки пустого списка
+     */
+    private void sendClientListUpdate(List<String> clientList) {
+        String clientListStr = String.join(",", clientList);
+        for (ServerClient client : clients) {
+            try {
+                client.out.writeObject("Client List:" + clientListStr);
+            } catch (IOException e) {
+                System.out.println("Failed to send updated client list: " + e.getMessage());
+            }
         }
     }
 
@@ -154,6 +175,7 @@ public class Server {
         int id;
         int port;
         boolean connected = true;
+        private Habitat habitat;
 
         ServerClient(Socket socket) {
             this.socket = socket;
@@ -175,6 +197,7 @@ public class Server {
                         if (msg.startsWith("id:")) {
                             this.id = Integer.parseInt(msg.substring(3));
                             Platform.runLater(() -> textArea.appendText("Client " + this.id + " connected.\n"));
+                            sendClientList();
                         } else {
                             handleClientMessage(msg);
                         }
@@ -184,12 +207,14 @@ public class Server {
                 Platform.runLater(() -> textArea.appendText("Client error: " + e.getMessage() + "\n"));
             } finally {
                 close();
+                clients.remove(this);
+                sendClientList();
             }
         }
 
     private void handleClientMessage(String message) {
         if (message.equals("request_client_list")) {
-            sendClientList(this);
+            sendClientList();
         } else {
             Platform.runLater(() -> textArea.appendText("Received from client: " + message + "\n"));
         }

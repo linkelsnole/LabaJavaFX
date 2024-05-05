@@ -7,6 +7,7 @@
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -118,7 +119,7 @@
                               <Tooltip text="Начать симуляцию" />
                            </tooltip>
                         </Button>
-                        <Button fx:id="serverListButton" onAction="#handleServerListButton" layoutX="54.0" layoutY="543.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="179.0" text="Server List">
+                        <Button fx:id="serverListButton" layoutX="54.0" layoutY="563.0" mnemonicParsing="false" onAction="#handleServerListButton" prefHeight="32.0" prefWidth="179.0" text="Server List">
                            <font>
                               <Font name="Verdana" size="16.0" />
                            </font>
@@ -128,6 +129,7 @@
                               <Font name="System Bold" size="14.0" />
                            </font>
                         </Label>
+                        <ListView fx:id="clientListView" layoutX="41.0" layoutY="444.0" prefHeight="108.0" prefWidth="212.0" />
                         </children>
                     </AnchorPane>
                </content>
