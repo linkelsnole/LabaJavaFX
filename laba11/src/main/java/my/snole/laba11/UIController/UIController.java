@@ -1,13 +1,12 @@
 package my.snole.laba11.UIController;
 
 
+
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -27,18 +26,13 @@ import my.snole.laba11.Habitat;
 import my.snole.laba11.HelloApplication;
 import my.snole.laba11.baseAI.BaseAI;
 import my.snole.laba11.model.SingletonDynamicArray;
-import my.snole.laba11.model.ant.AI.WarriorAntAI;
-import my.snole.laba11.model.ant.AI.WorkerAntAI;
-import my.snole.laba11.model.ant.Ant;
-import my.snole.laba11.model.ant.WarriorAnt;
-import my.snole.laba11.model.ant.WorkerAnt;
+import my.snole.laba11.server.Message;
 import my.snole.laba11.service.Config;
 import my.snole.laba11.service.Console;
 import my.snole.laba11.service.UIService;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 
@@ -83,6 +77,9 @@ public class UIController {
     private Button curObjBtn;
     @FXML
     private Pane scenePane;//окно где появляются муравьи
+    String REQUEST_CLIENT_LIST = "request_client_list";
+    String GET_OBJECTS = "get_objects";
+    String SEND_OBJECTS = "send_objects";
 
     /**
      * AI и приоритет
@@ -114,21 +111,52 @@ public class UIController {
 
     public void updateServerId() {
         Platform.runLater(() -> {
-            idServerLabel.setText("ID: " + String.valueOf(habitat.getId()));
+            idServerLabel.setText("ID: " + habitat.getId());
         });
     }
 
+//    public void updateClientListView(List<String> clients) {
+//        Platform.runLater(() -> {
+//            System.out.println("метод updateClientListView вызывает");
+//            // TODO: 11.05.2024 add timer task to update client list
+////            habitat.getClient().sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null));
+//            clientListView.getItems().setAll(clients);
+//        });
+//    }
+
+    private Timer clientListUpdateTimer;
     public void updateClientListView(List<String> clients) {
         Platform.runLater(() -> {
-            System.out.println("метод updateClientListView вызывает");
-            habitat.getClient().sendMessage("list");
             clientListView.getItems().setAll(clients);
+
+            if (clientListUpdateTimer != null) {
+                clientListUpdateTimer.cancel();
+            }
+            clientListUpdateTimer = new Timer();
+            clientListUpdateTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        habitat.getClient().sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null));
+                    });
+                }
+            }, 5000, 5000);
         });
     }
+
+    public void stopClientListUpdateTimer() {
+        if (clientListUpdateTimer != null) {
+            clientListUpdateTimer.cancel();
+            clientListUpdateTimer = null;
+        }
+    }
+
+
     @FXML
     private void handleServerListButton() {
         if (habitat.getClient().isConnected()) {
-            habitat.getClient().sendMessage("request_client_list");
+            Message message = new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null);
+            habitat.getClient().sendMessage(message);
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Connection Error");
@@ -234,7 +262,8 @@ public class UIController {
 
 
     private void updateTimeLabel() {
-        if (!popup.getContent().isEmpty() && popup.getContent().get(0) instanceof Label label) {
+        if (!popup.getContent().isEmpty() && popup.getContent().get(0) instanceof Label) {
+            Label label = (Label)  popup.getContent().get(0);
             label.setText(service.generateTimeString(Habitat.isSimulationStopped, Habitat.stoptime, Habitat.startTime));
         }
     }
@@ -309,7 +338,7 @@ public class UIController {
                     if (!popup.isShowing()) {
                         if (Habitat.isSimulationStopped) {
                             updateTimeLabel();
-                    }
+                        }
                         showTimePopup();
                         showInformationButton.setSelected(true);
                     } else {

@@ -1,4 +1,6 @@
 package my.snole.laba11.service;
+
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +12,7 @@ import javafx.stage.Stage;
 import my.snole.laba11.Habitat;
 
 import java.io.IOException;
+import my.snole.laba11.server.Message;
 
 public class Console {
     @FXML
@@ -18,6 +21,9 @@ public class Console {
     private TextField textField;
     private Stage stage;
     private Habitat habitat;
+    String REQUEST_CLIENT_LIST = "request_client_list";
+    String GET_OBJECTS = "get_objects";
+    String SEND_OBJECTS = "send_objects";
 
     /**
      *  Контруктор с параметрами
@@ -56,12 +62,12 @@ public class Console {
                     appendText(connected ? "Connected to server.\n" : "Failed to connect.\n");
                 }
             } else if (command.equalsIgnoreCase("get list")) {
-                habitat.client.sendMessage("list");
+                habitat.client.sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null));
             } else if (command.toLowerCase().startsWith("get ants")) {
                 String[] parts = command.split(" ");
                 if (parts.length == 3) {
                     int numAnts = Integer.parseInt(parts[2]);
-                    habitat.client.sendMessage("giveObject " + numAnts);
+                    habitat.client.sendMessage(new Message(habitat.getClient().getId(), GET_OBJECTS, null, null, numAnts, null));
                 }
             } else if (command.equalsIgnoreCase("start")) {
                 habitat.startSimulation();
@@ -74,6 +80,7 @@ public class Console {
             }
         });
     }
+    
     public void show() {
         if (stage != null) {
             stage.show();

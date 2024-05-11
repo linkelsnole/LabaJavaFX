@@ -14,6 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import my.snole.laba11.model.ant.WarriorAnt;
+import my.snole.laba11.model.ant.WorkerAnt;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Client {
     private int id;
@@ -25,6 +28,10 @@ public class Client {
     private Thread thread;
     private Habitat habitat;
     SingletonDynamicArray singletonDynamicArray;
+    String REQUEST_CLIENT_LIST = "request_client_list";
+    String GET_OBJECTS = "get_objects";
+    String SEND_OBJECTS = "send_objects";
+    String CLIENT_LIST = "client_list";
 
 
 
@@ -63,13 +70,15 @@ public class Client {
             while (connected) {
                 Object obj = in.readObject();
                 if (obj instanceof String) {
-                    String message = (String) obj;
-                    System.out.println("Message received: " + message);
-                    if (message.startsWith("Client List:")) {
-                        showClientListDialog(message.substring(12));//для ServerListButton
-                        handleServerMessage(message);
-                    } else {
-                    }
+                    String messageString = (String) obj;
+                    System.out.println("Message received: " + messageString);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    Message message = objectMapper.readValue(messageString, Message.class);
+//                    if (CLIENT_LIST.equals(message.getMethod())) {
+//                        showClientListDialog(message.getClientListString());//для ServerListButton
+//
+//                    }
+                    handleServerMessage(message);
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -88,62 +97,74 @@ public class Client {
         });
     }
 
-    private void handleServerMessage(String message) {
-        String[] parts = message.split(":", 2);
-        switch (parts[0].trim()) {
-            case "Client List":
-                List<String> clientDetails = Arrays.asList(parts[1].split(","));
-                habitat.updateClientListView(clientDetails);
-                System.out.println("Method Comppppl");
+    private void handleServerMessage(Message message) {
+        System.out.println("handle server message: " + message.getMethod() + ", from " + message.getSender());
+        switch (message.getMethod()) {
+            case "client_list":
+                if (message.getClientListString() != null) {
+                    String[] parts = message.getClientListString().split(",");
+                    List<String> clientDetails = Arrays.asList(parts);
+                    habitat.updateClientListView(clientDetails);
+                }
                 break;
-            case "giveObject":
-                requestAnts(Integer.parseInt(parts[1]));
+            case "get_objects":
+                requestAnts(message.getTransferObjectCount());
                 break;
-            case "getObject":
-                receiveAnts(parts[1]);
+            case "send_objects":
+                receiveAnts(message.getAnts());
                 break;
         }
     }
 
     private void requestAnts(int numberOfAnts) {
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
             List<Ant> list = new ArrayList<>(SingletonDynamicArray.getInstance().getAntsList());
-
+            List<TransferObject> transferObjects;
             //если список муравьёв меньше, чем запрошенное кол-во, отправляем все что есть в симуляции
             if (list.size() <= numberOfAnts) {
-                out.writeObject(new ArrayList<>(list));
+                transferObjects = list.stream().map(this::antToTransferObject).collect(Collectors.toList());
+                list.clear();
+                // TODO: 11.05.2024 remove ants from visual panel
             } else {
                 //выбираем случайные элементы
                 Random random = new Random();
                 List<Ant> selectedAnts = random.ints(0, list.size()).distinct().limit(numberOfAnts)
                         .mapToObj(list::get).collect(Collectors.toList());
-                out.writeObject(selectedAnts);
+                list.removeAll(selectedAnts);
+                transferObjects = selectedAnts.stream().map(this::antToTransferObject).collect(Collectors.toList());
+                // TODO: 11.05.2024 remove ants from visual panel
             }
+            Message message = new Message(getId(), SEND_OBJECTS, null, null, transferObjects.size(), transferObjects);
+            out.writeObject(objectMapper.writeValueAsString(message));
+
         } catch (IOException e) {
             Platform.runLater(() -> System.out.println("Failed to send ants: " + e.getMessage()));
         }
     }
 
-    private void receiveAnts(String data) {
-        if (!"null".equals(data)) {
+    private void receiveAnts(List<TransferObject> transferObjects) {
+        if (!transferObjects.isEmpty()) {
             Platform.runLater(() -> {
                 try {
-                    ArrayList<Ant> ants = (ArrayList<Ant>) in.readObject();
+                    List<Ant> ants = transferObjects.stream().map(this::transferObjectToAnt).collect(Collectors.toList());
                     for (Ant ant : ants) {
                         SingletonDynamicArray.getInstance().addElement(ant, ant.getBirthTime());
                         habitat.restoreAntImageView(ant);
+                        habitat.setAnt(ant);
                     }
-                } catch (IOException | ClassNotFoundException e) {
+                } catch (Exception e) {
                     System.out.println("Error receiving ants: " + e.getMessage());
                 }
             });
         }
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(Message message) {
+        ObjectMapper objectMapper = new ObjectMapper();
         if (connected) {
             try {
-                out.writeObject(message);
+                out.writeObject(objectMapper.writeValueAsString(message));
             } catch (IOException e) {
                 Platform.runLater(() -> System.out.println("Error sending message: " + e.getMessage()));
                 disconnect();
@@ -172,6 +193,21 @@ public class Client {
     }
     public boolean isConnected() {
         return connected;
+    }
+
+    private TransferObject antToTransferObject(Ant ant){
+        TransferObject transferObject = new TransferObject();
+        transferObject.setAntType(ant instanceof WarriorAnt ? AntType.WARRIOR : AntType.WORKER);
+        transferObject.setBirthTime(ant.getBirthTime());
+        transferObject.setLifetime(ant.getLifetime());
+        return transferObject;
+    }
+
+    private Ant transferObjectToAnt(TransferObject transferObject){
+        Ant ant = (transferObject.getAntType().equals(AntType.WARRIOR) ? new WarriorAnt() : new WorkerAnt());
+        ant.setLifetime(transferObject.getLifetime());
+        ant.setBirthTime(transferObject.getBirthTime());
+        return ant;
     }
 }
 

@@ -1,6 +1,10 @@
 package my.snole.laba11.server;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import java.util.Collections;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,7 +20,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import my.snole.laba11.model.SingletonDynamicArray;
+import my.snole.laba11.model.ant.Ant;
+import my.snole.laba11.model.ant.WarriorAnt;
 
 
 public class Server {
@@ -35,8 +42,15 @@ public class Server {
     private Thread thread;
     private ArrayList<ServerClient> clients = new ArrayList<>();
     private boolean serverRunning = false;
+    String REQUEST_CLIENT_LIST = "request_client_list";
+    String GET_OBJECTS = "get_objects";
+    String SEND_OBJECTS = "send_objects";
+    String CLIENT_LIST = "client_list";
+
+    private Client client;
 
     private int port;
+
 
     @FXML
     private void handleButtonOn() {
@@ -124,18 +138,40 @@ public class Server {
         }
     }
 
-    private void sendClientList() {
-        ArrayList<String> clientDetails = new ArrayList<>();
-        for (ServerClient client : clients) {
-            clientDetails.add("Client ID: " + client.getId() + " -> Port: " + client.socket.getPort());
-        }
-        String clientListStr = String.join(",", clientDetails);
-        for (ServerClient client : clients) {
+//    private void sendClientList() {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        for (ServerClient client : clients) {
+//            try {
+//                Message message = new Message();
+//                message.setMethod(CLIENT_LIST);
+//                message.setClientListString(clients.stream()
+//                        .map(serverClient -> "Client ID: " + serverClient.getId() + " -> Port: " + serverClient.socket.getPort())
+//                        .collect(Collectors.joining("\n")));// ! заменил на порт сервера
+//                client.out.writeObject(objectMapper.writeValueAsString(message));
+//            } catch (IOException e) {
+//                System.out.println("Failed to send client list to: " + client.getId());
+//                e.printStackTrace();
+//            }
+//        }
+//    }
+
+    private synchronized void sendClientList() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String clientListString = clients.stream()
+                .map(client -> "Client ID: " + client.getId() + " -> Port: " + port)
+                .collect(Collectors.joining("\n"));
+
+        List<ServerClient> clientsSnapshot = new ArrayList<>(clients);
+        for (ServerClient client : clientsSnapshot) {
             try {
-                client.out.writeObject("Client List:" + clientListStr);
+                Message message = new Message();
+                message.setMethod(CLIENT_LIST);
+                message.setClientListString(clientListString);
+                client.out.writeObject(objectMapper.writeValueAsString(message));
             } catch (IOException e) {
                 System.out.println("Failed to send client list to: " + client.getId());
                 e.printStackTrace();
+                client.close();
             }
         }
     }
@@ -158,10 +194,15 @@ public class Server {
      * Метод для отправки пустого списка
      */
     private void sendClientListUpdate(List<String> clientList) {
-        String clientListStr = String.join(",", clientList);
+        ObjectMapper objectMapper = new ObjectMapper();
         for (ServerClient client : clients) {
             try {
-                client.out.writeObject("Client List:" + clientListStr);
+                Message message = new Message();
+                message.setMethod(CLIENT_LIST);
+                message.setClientListString(clients.stream()
+                        .map(serverClient -> "Client ID: " + serverClient.getId() + " -> Port: " + port)
+                        .collect(Collectors.joining("\n")));// ! заменил на порт сервера
+                client.out.writeObject(objectMapper.writeValueAsString(message));
             } catch (IOException e) {
                 System.out.println("Failed to send updated client list: " + e.getMessage());
             }
@@ -212,13 +253,28 @@ public class Server {
             }
         }
 
-    private void handleClientMessage(String message) {
-        if (message.equals("request_client_list")) {
-            sendClientList();
-        } else {
-            Platform.runLater(() -> textArea.appendText("Received from client: " + message + "\n"));
+        private void handleClientMessage(String message) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                Message m = objectMapper.readValue(message, Message.class);
+
+                System.out.println("handle client message: " + m.getMethod() + ", from " + m.getSender());
+                if (GET_OBJECTS.equals(m.getMethod())) {
+                    getObjects(m.getSender(), m.getTransferObjectCount());
+                }
+                // TODO: 11.05.2024 add SEND_OBJECTS case to send requested ants to requester
+                if (SEND_OBJECTS.equals(m.getMethod())) {
+                    sendObjects(m.getSender(), m.getTransferObjectCount());
+                }
+                if (REQUEST_CLIENT_LIST.equals(m.getMethod())) {
+                    sendClientList();
+                } else {
+                    Platform.runLater(() -> textArea.appendText("Received from client: " + message + "\n"));
+                }
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
-    }
 
         void close() {
             try {
@@ -227,6 +283,8 @@ public class Server {
                 if (in != null) in.close();
                 if (socket != null) socket.close();
             } catch (IOException e) {
+                clients.remove(this);
+                sendClientListUpdate(new ArrayList<>());
                 Platform.runLater(() -> textArea.appendText("Error closing client connection: " + e.getMessage() + "\n"));
             }
         }
@@ -234,6 +292,72 @@ public class Server {
             return id;
         }
 
+
+
+    }
+
+    private void getObjects(
+            int from,
+            int cnt
+    ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ServerClient receiver = clients.stream()
+                .filter(serverClient -> serverClient.getId() != from)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Missing message receiver"));
+        Message message = new Message();
+        message.setMethod(GET_OBJECTS);
+        message.setSender(from);
+        message.setTransferObjectCount(cnt);
+        try {
+            receiver.out.writeObject(objectMapper.writeValueAsString(message));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void sendObjects(int receiverId, int count) {
+        ServerClient receiver = clients.stream()
+                .filter(client -> client.getId() == receiverId)
+                .findFirst()
+                .orElse(null);
+
+        if (receiver == null) {
+            System.out.println("No client found with ID: " + receiverId);
+            return;
+        }
+
+        List<Ant> antsToSend = selectAntsForTransfer(count);
+        List<TransferObject> transferObjects = antsToSend.stream()
+                .map(this::antToTransferObject)
+                .collect(Collectors.toList());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Message responseMessage = new Message();
+        responseMessage.setMethod(SEND_OBJECTS);
+        responseMessage.setAnts(transferObjects);
+        responseMessage.setTransferObjectCount(transferObjects.size());
+        try {
+            receiver.out.writeObject(objectMapper.writeValueAsString(responseMessage));
+        } catch (IOException e) {
+            System.out.println("Failed to send objects: " + e.getMessage());
+        }
+    }
+    private List<Ant> selectAntsForTransfer(int count) {
+        List<Ant> availableAnts = new ArrayList<>(SingletonDynamicArray.getInstance().getAntsList());
+        if (count >= availableAnts.size()) {
+            return new ArrayList<>(availableAnts);
+        }
+        Collections.shuffle(availableAnts);
+        return availableAnts.subList(0, count);
+    }
+    private TransferObject antToTransferObject(Ant ant) {
+        AntType type = AntType.WORKER;
+        if (ant instanceof WarriorAnt) {
+            type = AntType.WARRIOR;
+        }
+        return new TransferObject(type, ant.getBirthTime(), ant.getLifetime());
     }
 
 }

@@ -61,6 +61,7 @@ public class Habitat  {
     }
     private UIController uiController;
 
+
     public void updateClientListView(List<String> clients) {
         Platform.runLater(() -> {
             uiController.updateClientListView(clients);
@@ -130,7 +131,7 @@ public class Habitat  {
 
 
 
-    private void setAnt(Ant ant) {
+    public void setAnt(Ant ant) {
         Point point = service.generateRandomPoint();
         ImageView imageView = new ImageView(ant.getImage());
         imageView.setLayoutX(point.getX());
