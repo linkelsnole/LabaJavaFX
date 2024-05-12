@@ -116,32 +116,43 @@ public class Client {
         }
     }
 
-    private void requestAnts(int numberOfAnts) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            List<Ant> list = new ArrayList<>(SingletonDynamicArray.getInstance().getAntsList());
-            List<TransferObject> transferObjects;
-            //если список муравьёв меньше, чем запрошенное кол-во, отправляем все что есть в симуляции
-            if (list.size() <= numberOfAnts) {
-                transferObjects = list.stream().map(this::antToTransferObject).collect(Collectors.toList());
-                list.clear();
-                // TODO: 11.05.2024 remove ants from visual panel
-            } else {
-                //выбираем случайные элементы
-                Random random = new Random();
-                List<Ant> selectedAnts = random.ints(0, list.size()).distinct().limit(numberOfAnts)
-                        .mapToObj(list::get).collect(Collectors.toList());
-                list.removeAll(selectedAnts);
-                transferObjects = selectedAnts.stream().map(this::antToTransferObject).collect(Collectors.toList());
-                // TODO: 11.05.2024 remove ants from visual panel
-            }
-            Message message = new Message(getId(), SEND_OBJECTS, null, null, transferObjects.size(), transferObjects);
-            out.writeObject(objectMapper.writeValueAsString(message));
-
-        } catch (IOException e) {
-            Platform.runLater(() -> System.out.println("Failed to send ants: " + e.getMessage()));
+private void requestAnts(int numberOfAnts) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+        List<Ant> list = new ArrayList<>(SingletonDynamicArray.getInstance().getAntsList());
+        List<Ant> antsToSend;
+        if (list.size() <= numberOfAnts) {
+            antsToSend = new ArrayList<>(list);
+        } else {
+            Random random = new Random();
+            antsToSend = random.ints(0, list.size())
+                    .distinct()
+                    .limit(numberOfAnts)
+                    .mapToObj(list::get)
+                    .collect(Collectors.toList());
         }
+
+        List<TransferObject> transferObjects = antsToSend.stream()
+                .map(this::antToTransferObject)
+                .collect(Collectors.toList());
+
+        Platform.runLater(() -> {
+            for (Ant ant : antsToSend) {
+                if (ant.getImageView() != null) {
+                    habitat.getScenePane().getChildren().remove(ant.getImageView());
+                }
+            }
+        });
+        // TODO: 11.05.2024 remove ants from visual panel
+        list.removeAll(antsToSend);
+
+        Message message = new Message(getId(), SEND_OBJECTS, null, null, transferObjects.size(), transferObjects);
+        out.writeObject(objectMapper.writeValueAsString(message));
+
+    } catch (IOException e) {
+        Platform.runLater(() -> System.out.println("Failed to send ants: " + e.getMessage()));
     }
+}
 
     private void receiveAnts(List<TransferObject> transferObjects) {
         if (!transferObjects.isEmpty()) {
@@ -151,7 +162,7 @@ public class Client {
                     for (Ant ant : ants) {
                         habitat.setAnt(ant);
                         SingletonDynamicArray.getInstance().addElement(ant, ant.getBirthTime());
-                        habitat.restoreAntImageView(ant);
+//                        habitat.restoreAntImageView(ant);
                     }
                 } catch (Exception e) {
                     System.out.println("Error receiving ants: " + e.getMessage());

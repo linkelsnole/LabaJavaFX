@@ -37,6 +37,8 @@ public class Habitat  {
     public static SingletonDynamicArray list;
     private final UIService service = new UIService();
     private AnchorPane scene;
+
+
     private Pane scenePane;
     private HabitatListener listener;
     public SimulationStateListener stateListener;
@@ -68,6 +70,9 @@ public class Habitat  {
         });
     }
 
+    public Pane getScenePane() {
+        return scenePane;
+    }
     public void setUIController(UIController controller) {
         this.uiController = controller;
     }

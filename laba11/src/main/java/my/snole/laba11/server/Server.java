@@ -262,7 +262,6 @@ public class Server {
                 if (GET_OBJECTS.equals(m.getMethod())) {
                     getObjects(m.getSender(), m.getTransferObjectCount());
                 }
-                // TODO: 11.05.2024 add SEND_OBJECTS case to send requested ants to requester
                 if (SEND_OBJECTS.equals(m.getMethod())) {
                     sendObjects(m.getSender(), m.getAnts());
                 }
