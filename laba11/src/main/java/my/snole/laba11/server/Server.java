@@ -264,7 +264,7 @@ public class Server {
                 }
                 // TODO: 11.05.2024 add SEND_OBJECTS case to send requested ants to requester
                 if (SEND_OBJECTS.equals(m.getMethod())) {
-                    sendObjects(m.getSender(), m.getTransferObjectCount());
+                    sendObjects(m.getSender(), m.getAnts());
                 }
                 if (REQUEST_CLIENT_LIST.equals(m.getMethod())) {
                     sendClientList();
@@ -317,21 +317,16 @@ public class Server {
 
     }
 
-    private void sendObjects(int receiverId, int count) {
+    private void sendObjects(int senderId, List<TransferObject> transferObjects) {
         ServerClient receiver = clients.stream()
-                .filter(client -> client.getId() == receiverId)
+                .filter(client -> client.getId() != senderId)
                 .findFirst()
                 .orElse(null);
 
         if (receiver == null) {
-            System.out.println("No client found with ID: " + receiverId);
+            System.out.println("No client found with ID: " + senderId);
             return;
         }
-
-        List<Ant> antsToSend = selectAntsForTransfer(count);
-        List<TransferObject> transferObjects = antsToSend.stream()
-                .map(this::antToTransferObject)
-                .collect(Collectors.toList());
 
         ObjectMapper objectMapper = new ObjectMapper();
         Message responseMessage = new Message();
@@ -344,20 +339,4 @@ public class Server {
             System.out.println("Failed to send objects: " + e.getMessage());
         }
     }
-    private List<Ant> selectAntsForTransfer(int count) {
-        List<Ant> availableAnts = new ArrayList<>(SingletonDynamicArray.getInstance().getAntsList());
-        if (count >= availableAnts.size()) {
-            return new ArrayList<>(availableAnts);
-        }
-        Collections.shuffle(availableAnts);
-        return availableAnts.subList(0, count);
-    }
-    private TransferObject antToTransferObject(Ant ant) {
-        AntType type = AntType.WORKER;
-        if (ant instanceof WarriorAnt) {
-            type = AntType.WARRIOR;
-        }
-        return new TransferObject(type, ant.getBirthTime(), ant.getLifetime());
-    }
-
 }

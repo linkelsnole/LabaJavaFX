@@ -149,9 +149,9 @@ public class Client {
                 try {
                     List<Ant> ants = transferObjects.stream().map(this::transferObjectToAnt).collect(Collectors.toList());
                     for (Ant ant : ants) {
+                        habitat.setAnt(ant);
                         SingletonDynamicArray.getInstance().addElement(ant, ant.getBirthTime());
                         habitat.restoreAntImageView(ant);
-                        habitat.setAnt(ant);
                     }
                 } catch (Exception e) {
                     System.out.println("Error receiving ants: " + e.getMessage());
