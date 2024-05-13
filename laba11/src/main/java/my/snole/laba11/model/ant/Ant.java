@@ -83,4 +83,14 @@ public abstract class Ant implements Serializable {
     public void setLoadedFromSave(boolean loadedFromSave) {
         isLoadedFromSave = loadedFromSave;
     }
+
+    private boolean isTransferred = false;
+
+    public boolean isTransferred() {
+        return isTransferred;
+    }
+
+    public void setTransferred(boolean transferred) {
+        isTransferred = transferred;
+    }
 }

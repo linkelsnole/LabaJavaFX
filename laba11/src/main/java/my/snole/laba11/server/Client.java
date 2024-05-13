@@ -2,6 +2,7 @@ package my.snole.laba11.server;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.scene.image.ImageView;
 import my.snole.laba11.model.SingletonDynamicArray;
 import my.snole.laba11.model.ant.Ant;
 import my.snole.laba11.Habitat;
@@ -23,11 +24,9 @@ public class Client {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
-
     private boolean connected = false;
     private Thread thread;
     private Habitat habitat;
-    SingletonDynamicArray singletonDynamicArray;
     String REQUEST_CLIENT_LIST = "request_client_list";
     String GET_OBJECTS = "get_objects";
     String SEND_OBJECTS = "send_objects";
@@ -39,6 +38,7 @@ public class Client {
         this.habitat = habitat;
         this.id = SingletonDynamicArray.getInstance().generateUniqueId();
     }
+
 
     public synchronized boolean connect(String ip, int port) {
         if (!connected) {
@@ -74,10 +74,6 @@ public class Client {
                     System.out.println("Message received: " + messageString);
                     ObjectMapper objectMapper = new ObjectMapper();
                     Message message = objectMapper.readValue(messageString, Message.class);
-//                    if (CLIENT_LIST.equals(message.getMethod())) {
-//                        showClientListDialog(message.getClientListString());//для ServerListButton
-//
-//                    }
                     handleServerMessage(message);
                 }
             }
@@ -116,43 +112,47 @@ public class Client {
         }
     }
 
-private void requestAnts(int numberOfAnts) {
-    ObjectMapper objectMapper = new ObjectMapper();
-    try {
-        List<Ant> list = new ArrayList<>(SingletonDynamicArray.getInstance().getAntsList());
-        List<Ant> antsToSend;
-        if (list.size() <= numberOfAnts) {
-            antsToSend = new ArrayList<>(list);
-        } else {
-            Random random = new Random();
-            antsToSend = random.ints(0, list.size())
-                    .distinct()
-                    .limit(numberOfAnts)
-                    .mapToObj(list::get)
+    private void requestAnts(int numberOfAnts) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            List<Ant> list = SingletonDynamicArray.getInstance().getAntsList().stream()
+                    .filter(ant -> !ant.isTransferred())
                     .collect(Collectors.toList());
-        }
-
-        List<TransferObject> transferObjects = antsToSend.stream()
-                .map(this::antToTransferObject)
-                .collect(Collectors.toList());
-
-        Platform.runLater(() -> {
-            for (Ant ant : antsToSend) {
-                if (ant.getImageView() != null) {
-                    habitat.getScenePane().getChildren().remove(ant.getImageView());
-                }
+            List<Ant> antsToSend;
+            if (list.size() <= numberOfAnts) {
+                antsToSend = new ArrayList<>(list);
+            } else {
+                Random random = new Random();
+                antsToSend = random.ints(0, list.size())
+                        .distinct()
+                        .limit(numberOfAnts)
+                        .mapToObj(list::get)
+                        .collect(Collectors.toList());
             }
-        });
-        // TODO: 11.05.2024 remove ants from visual panel
-        list.removeAll(antsToSend);
 
-        Message message = new Message(getId(), SEND_OBJECTS, null, null, transferObjects.size(), transferObjects);
-        out.writeObject(objectMapper.writeValueAsString(message));
+            List<TransferObject> transferObjects = antsToSend.stream()
+                    .map(this::antToTransferObject)
+                    .collect(Collectors.toList());
 
-    } catch (IOException e) {
-        Platform.runLater(() -> System.out.println("Failed to send ants: " + e.getMessage()));
+            Platform.runLater(() -> {
+                for (Ant ant : antsToSend) {
+                    if (ant.getImageView() != null) {
+                        habitat.getScenePane().getChildren().remove(ant.getImageView());
+                    }
+                    ant.setTransferred(true); // Отмечаем муравья как перекинутого
+                }
+            });
+
+            list.removeAll(antsToSend);
+
+            Message message = new Message(getId(), SEND_OBJECTS, null, null, transferObjects.size(), transferObjects);
+            out.writeObject(objectMapper.writeValueAsString(message));
+
+        } catch (IOException e) {
+            Platform.runLater(() -> System.out.println("Failed to send ants: " + e.getMessage()));
+        }
     }
-}
+
 
     private void receiveAnts(List<TransferObject> transferObjects) {
         if (!transferObjects.isEmpty()) {
@@ -160,9 +160,8 @@ private void requestAnts(int numberOfAnts) {
                 try {
                     List<Ant> ants = transferObjects.stream().map(this::transferObjectToAnt).collect(Collectors.toList());
                     for (Ant ant : ants) {
-                        habitat.setAnt(ant);
+                        habitat.restoreAntImageView(ant);
                         SingletonDynamicArray.getInstance().addElement(ant, ant.getBirthTime());
-//                        habitat.restoreAntImageView(ant);
                     }
                 } catch (Exception e) {
                     System.out.println("Error receiving ants: " + e.getMessage());
@@ -206,19 +205,23 @@ private void requestAnts(int numberOfAnts) {
         return connected;
     }
 
-    private TransferObject antToTransferObject(Ant ant){
+    private TransferObject antToTransferObject(Ant ant) {
         TransferObject transferObject = new TransferObject();
         transferObject.setAntType(ant instanceof WarriorAnt ? AntType.WARRIOR : AntType.WORKER);
         transferObject.setBirthTime(ant.getBirthTime());
         transferObject.setLifetime(ant.getLifetime());
+        transferObject.setBirthX(ant.getBirthX());
+        transferObject.setBirthY(ant.getBirthY());
         return transferObject;
     }
 
-    private Ant transferObjectToAnt(TransferObject transferObject){
+    private Ant transferObjectToAnt(TransferObject transferObject) {
         Ant ant = (transferObject.getAntType().equals(AntType.WARRIOR) ? new WarriorAnt() : new WorkerAnt());
         ant.setLifetime(transferObject.getLifetime());
         ant.setBirthTime(transferObject.getBirthTime());
+        ant.setBirthPosition(transferObject.getBirthX(), transferObject.getBirthY());
         return ant;
     }
+
 }
 

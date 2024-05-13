@@ -13,6 +13,7 @@ import my.snole.laba11.Habitat;
 
 import java.io.IOException;
 import my.snole.laba11.server.Message;
+import my.snole.laba11.server.Server;
 
 public class Console {
     @FXML
@@ -28,7 +29,7 @@ public class Console {
     /**
      *  Контруктор с параметрами
      *  @param owner  Окно-владелец
-     *  @param habitat Объект класса [[Habitat]]
+     *  @param habitat Объект класса
      */
     public Console(Stage owner, Habitat habitat) {
         this.habitat = habitat;
@@ -46,41 +47,69 @@ public class Console {
     }
 
     /**
-     * Обрабатывает команды ввода пользователя(start; stop) и выполняет соответствующие действия
+     * Обрабатывает команды ввода пользователя и выполняет соответствующие действия
+     *  Команды:
+     * ? - connect <ip> <port>: подключает клиента к серверу по указанному IP и порту
+     * ? - get ants <number> [port]: запрашивает указанное количество муравьёв
+     * ? - start: запускает симуляцию
+     * ? - stop: останавливает симуляцию
      */
     @FXML
     private void processCommand() {
         String command = textField.getText().trim();
         textField.clear();
         Platform.runLater(() -> {
-            if (command.toLowerCase().startsWith("connect")) {
-                String[] parts = command.split(" ");
-                if (parts.length == 3) {
-                    String ip = parts[1];
-                    int port = Integer.parseInt(parts[2]);
-                    boolean connected = habitat.client.connect(ip, port);
-                    appendText(connected ? "Connected to server.\n" : "Failed to connect.\n");
-                }
-            } else if (command.equalsIgnoreCase("get list")) {
-                habitat.client.sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null));
-            } else if (command.toLowerCase().startsWith("get ants")) {
-                String[] parts = command.split(" ");
-                if (parts.length == 3) {
-                    int numAnts = Integer.parseInt(parts[2]);
-                    habitat.client.sendMessage(new Message(habitat.getClient().getId(), GET_OBJECTS, null, null, numAnts, null));
-                }
-            } else if (command.equalsIgnoreCase("start")) {
-                habitat.startSimulation();
-                appendText("Simulation started...\n");
-            } else if (command.equalsIgnoreCase("stop")) {
-                habitat.stopSimulation();
-                appendText("Simulation stopped...\n");
-            } else {
-                appendText("Unknown command: " + command + "\n");
+            String[] parts = command.split(" ");
+            switch (parts[0].toLowerCase()) {
+                case "connect":
+                    if (parts.length == 3) {
+                        String ip = parts[1];
+                        int port = Integer.parseInt(parts[2]);
+                        boolean connected = habitat.client.connect(ip, port);
+                        appendText(connected ? "Connected to server.\n" : "Failed to connect.\n");
+                    } else {
+                        appendText("Invalid command format. Use 'connect <ip> <port>'.\n");
+                    }
+                    break;
+                case "get":
+                    if (parts.length >= 2) {
+                        switch (parts[1].toLowerCase()) {
+                            case "list":
+                                habitat.client.sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null));
+                                appendText("Requested client list.\n");
+                                break;
+                            case "ants":
+                                if (parts.length == 3 || parts.length == 4) {
+                                    int numAnts = Integer.parseInt(parts[2]);
+                                    int port = parts.length == 4 ? Integer.parseInt(parts[3]) : Server.DEFAULT_PORT;
+                                    habitat.client.sendMessage(new Message(habitat.getClient().getId(), GET_OBJECTS, port, null, numAnts, null));
+                                    appendText("Requesting " + numAnts + " ants from port " + port + ".\n");
+                                } else {
+                                    appendText("Invalid command format. Use 'get ants <number> [port]'.\n");
+                                }
+                                break;
+                            default:
+                                appendText("Unknown get command: " + command + "\n");
+                                break;
+                        }
+                    }
+                    break;
+                case "start":
+                    habitat.startSimulation();
+                    appendText("Simulation started...\n");
+                    break;
+                case "stop":
+                    habitat.stopSimulation();
+                    appendText("Simulation stopped...\n");
+                    break;
+                default:
+                    appendText("Unknown command: " + command + "\n");
+                    break;
             }
         });
     }
-    
+
+
     public void show() {
         if (stage != null) {
             stage.show();
@@ -92,3 +121,38 @@ public class Console {
     }
 }
 
+
+//    @FXML
+//    private void processCommand() {
+//        String command = textField.getText().trim();
+//        textField.clear();
+//        Platform.runLater(() -> {
+//            if (command.toLowerCase().startsWith("connect")) {
+//                String[] parts = command.split(" ");
+//                if (parts.length == 3) {
+//                    String ip = parts[1];
+//                    int port = Integer.parseInt(parts[2]);
+//                    boolean connected = habitat.client.connect(ip, port);
+//                    appendText(connected ? "Connected to server.\n" : "Failed to connect.\n");
+//                }
+//            } else if (command.equalsIgnoreCase("get list")) {
+//                habitat.client.sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null));
+//            }
+//            else if (command.toLowerCase().startsWith("get ants")) {
+//                String[] parts = command.split(" ");
+//                if (parts.length == 3) {
+//                    int numAnts = Integer.parseInt(parts[2]);
+//                    habitat.client.sendMessage(new Message(habitat.getClient().getId(), GET_OBJECTS, null, null, numAnts, null));
+//                }
+//            }
+//            else if (command.equalsIgnoreCase("start")) {
+//                habitat.startSimulation();
+//                appendText("Simulation started...\n");
+//            } else if (command.equalsIgnoreCase("stop")) {
+//                habitat.stopSimulation();
+//                appendText("Simulation stopped...\n");
+//            } else {
+//                appendText("Unknown command: " + command + "\n");
+//            }
+//        });
+//    }

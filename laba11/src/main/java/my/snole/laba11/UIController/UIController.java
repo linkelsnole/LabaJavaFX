@@ -204,6 +204,7 @@ public class UIController {
                     hideInformationButton.setSelected(true);
                     habitat.toggleWorkerAntAI(workerAI.isSelected());
                     habitat.toggleWarriorAntAI(warriorAI.isSelected());
+                    resetTransferredFlags();
                 });
             }
 
@@ -227,6 +228,11 @@ public class UIController {
         updateServerId();
     }
 
+    public void resetTransferredFlags() {
+        SingletonDynamicArray.getInstance().getAntsList().stream()
+                .filter(ant -> System.currentTimeMillis() > ant.getBirthTime() + ant.getLifetime())
+                .forEach(ant -> ant.setTransferred(false));
+    }
     private void setupListeners() {
         timeTextWork.textProperty().addListener((obs, oldVal, newVal) -> {
             workerAntN1 = parseInputOrUseDefault(timeTextWork, 2);

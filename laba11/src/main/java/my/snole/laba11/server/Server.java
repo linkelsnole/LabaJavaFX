@@ -338,4 +338,5 @@ public class Server {
             System.out.println("Failed to send objects: " + e.getMessage());
         }
     }
+    public static int DEFAULT_PORT = 4000;
 }
