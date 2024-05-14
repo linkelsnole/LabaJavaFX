@@ -83,16 +83,6 @@ public class Client {
         }
     }
 
-    private void showClientListDialog(String clientList) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Connected Clients");
-            alert.setHeaderText(null);
-            alert.setContentText(clientList);
-            alert.showAndWait();
-        });
-    }
-
     private void handleServerMessage(Message message) {
         System.out.println("handle server message: " + message.getMethod() + ", from " + message.getSender());
         switch (message.getMethod()) {
@@ -104,7 +94,7 @@ public class Client {
                 }
                 break;
             case "get_objects":
-                requestAnts(message.getTransferObjectCount());
+                requestAnts(message.getTransferObjectCount(), message.getTargetClientId()); // Обновлено для запроса с целевым ID
                 break;
             case "send_objects":
                 receiveAnts(message.getAnts());
@@ -112,14 +102,14 @@ public class Client {
         }
     }
 
-    private void requestAnts(int numberOfAnts) {
+    private void requestAnts(int numberOfAnts, int targetClientId) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             List<Ant> list = SingletonDynamicArray.getInstance().getAntsList().stream()
                     .filter(ant -> !ant.isTransferred())
                     .collect(Collectors.toList());
             List<Ant> antsToSend;
-            if (list.size() <= numberOfAnts) {
+            if (list.size() <= numberOfAnts) { // ? Если муравьев меньше,то отправ все колво
                 antsToSend = new ArrayList<>(list);
             } else {
                 Random random = new Random();
@@ -139,13 +129,13 @@ public class Client {
                     if (ant.getImageView() != null) {
                         habitat.getScenePane().getChildren().remove(ant.getImageView());
                     }
-                    ant.setTransferred(true); // Отмечаем муравья как перекинутого
+                    ant.setTransferred(true);
                 }
             });
 
             list.removeAll(antsToSend);
 
-            Message message = new Message(getId(), SEND_OBJECTS, null, null, transferObjects.size(), transferObjects);
+            Message message = new Message(getId(), SEND_OBJECTS, null, null, transferObjects.size(), transferObjects, targetClientId);
             out.writeObject(objectMapper.writeValueAsString(message));
 
         } catch (IOException e) {

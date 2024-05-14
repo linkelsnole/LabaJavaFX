@@ -79,9 +79,9 @@ public class SingletonDynamicArray {
 
     public int generateUniqueId() {
         Random rand = new Random();
-        int id = rand.nextInt(Integer.MAX_VALUE);
+        int id = 1000 + rand.nextInt(90000);
         while (ids.contains(id)) {
-            id = rand.nextInt(Integer.MAX_VALUE);
+            id = 1000 + rand.nextInt(90000);
         }
         return id;
     }

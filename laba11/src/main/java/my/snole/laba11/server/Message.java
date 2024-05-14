@@ -10,6 +10,7 @@ public class Message {
     private Integer transferObjectCount;
     private List<TransferObject> ants;
     private Long millis;
+    private Integer targetClientId;
 
     public Message(
             Integer sender,
@@ -17,7 +18,8 @@ public class Message {
             Integer port,
             String clientListString,
             Integer transferObjectCount,
-            List<TransferObject> ants
+            List<TransferObject> ants,
+            Integer targetClientId
     ) {
         this.sender = sender;
         this.method = method;
@@ -26,6 +28,7 @@ public class Message {
         this.transferObjectCount = transferObjectCount;
         this.ants = ants;
         this.millis = System.currentTimeMillis();
+        this.targetClientId = targetClientId;
     }
 
     public Message() {
@@ -85,6 +88,14 @@ public class Message {
 
     public void setTransferObjectCount(Integer transferObjectCount) {
         this.transferObjectCount = transferObjectCount;
+    }
+
+    public Integer getTargetClientId() {
+        return targetClientId;
+    }
+
+    public void setTargetClientId(Integer targetClientId) {
+        this.targetClientId = targetClientId;
     }
 }
 

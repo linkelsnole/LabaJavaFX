@@ -138,22 +138,6 @@ public class Server {
         }
     }
 
-//    private void sendClientList() {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        for (ServerClient client : clients) {
-//            try {
-//                Message message = new Message();
-//                message.setMethod(CLIENT_LIST);
-//                message.setClientListString(clients.stream()
-//                        .map(serverClient -> "Client ID: " + serverClient.getId() + " -> Port: " + serverClient.socket.getPort())
-//                        .collect(Collectors.joining("\n")));// ! заменил на порт сервера
-//                client.out.writeObject(objectMapper.writeValueAsString(message));
-//            } catch (IOException e) {
-//                System.out.println("Failed to send client list to: " + client.getId());
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     private synchronized void sendClientList() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -240,7 +224,7 @@ public class Server {
                             Platform.runLater(() -> textArea.appendText("Client " + this.id + " connected.\n"));
                             sendClientList();
                         } else {
-                            handleClientMessage(msg);
+                            handleClientMessage(msg, this);
                         }
                     }
                 }
@@ -253,14 +237,18 @@ public class Server {
             }
         }
 
-        private void handleClientMessage(String message) {
+        private void handleClientMessage(String message, ServerClient client) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 Message m = objectMapper.readValue(message, Message.class);
 
                 System.out.println("handle client message: " + m.getMethod() + ", from " + m.getSender());
                 if (GET_OBJECTS.equals(m.getMethod())) {
-                    getObjects(m.getSender(), m.getTransferObjectCount());
+                    ServerClient targetClient = clients.stream()
+                            .filter(c -> c.getId() == m.getTargetClientId())
+                            .findFirst()
+                            .orElseThrow(() -> new RuntimeException("Client not found: ID " + m.getTargetClientId()));
+                    targetClient.getObjects(m.getSender(), m.getTransferObjectCount(), m.getTargetClientId());
                 }
                 if (SEND_OBJECTS.equals(m.getMethod())) {
                     sendObjects(m.getSender(), m.getAnts());
@@ -291,30 +279,29 @@ public class Server {
             return id;
         }
 
+        private void getObjects(int from, int cnt, int targetClientId) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ServerClient receiver = clients.stream()
+                    .filter(client -> client.getId() == targetClientId)
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No client found with ID: " + targetClientId));
+            Message message = new Message();
+            message.setMethod(GET_OBJECTS);
+            message.setSender(from);
+            message.setTransferObjectCount(cnt);
+            message.setTargetClientId(targetClientId);  // Устанавливаем ID целевого клиента
 
-
-    }
-
-    private void getObjects(
-            int from,
-            int cnt
-    ) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ServerClient receiver = clients.stream()
-                .filter(serverClient -> serverClient.getId() != from)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Missing message receiver"));
-        Message message = new Message();
-        message.setMethod(GET_OBJECTS);
-        message.setSender(from);
-        message.setTransferObjectCount(cnt);
-        try {
-            receiver.out.writeObject(objectMapper.writeValueAsString(message));
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                receiver.out.writeObject(objectMapper.writeValueAsString(message));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
+
+
+
 
     private void sendObjects(int senderId, List<TransferObject> transferObjects) {
         ServerClient receiver = clients.stream()

@@ -137,7 +137,7 @@ public class UIController {
                 @Override
                 public void run() {
                     Platform.runLater(() -> {
-                        habitat.getClient().sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null));
+                        habitat.getClient().sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null, null));
                     });
                 }
             }, 5000, 5000);
@@ -155,7 +155,7 @@ public class UIController {
     @FXML
     private void handleServerListButton() {
         if (habitat.getClient().isConnected()) {
-            Message message = new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null);
+            Message message = new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null, null);
             habitat.getClient().sendMessage(message);
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);

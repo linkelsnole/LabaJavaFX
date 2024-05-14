@@ -75,17 +75,17 @@ public class Console {
                     if (parts.length >= 2) {
                         switch (parts[1].toLowerCase()) {
                             case "list":
-                                habitat.client.sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null));
+                                habitat.client.sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null, null, null, null, null));
                                 appendText("Requested client list.\n");
                                 break;
                             case "ants":
-                                if (parts.length == 3 || parts.length == 4) {
+                                if (parts[1].equalsIgnoreCase("ants") && (parts.length == 4 || parts.length == 5)) {
                                     int numAnts = Integer.parseInt(parts[2]);
-                                    int port = parts.length == 4 ? Integer.parseInt(parts[3]) : Server.DEFAULT_PORT;
-                                    habitat.client.sendMessage(new Message(habitat.getClient().getId(), GET_OBJECTS, port, null, numAnts, null));
-                                    appendText("Requesting " + numAnts + " ants from port " + port + ".\n");
+                                    int targetClientId = Integer.parseInt(parts[3]);
+                                    habitat.client.sendMessage(new Message(habitat.getClient().getId(), GET_OBJECTS, null, null, numAnts, null, targetClientId));
+                                    appendText("Requesting " + numAnts + " ants from client " + targetClientId + ".\n");
                                 } else {
-                                    appendText("Invalid command format. Use 'get ants <number> [port]'.\n");
+                                    appendText("Invalid command format. Use 'get ants <number> <targetClientId>'.\n");
                                 }
                                 break;
                             default:
