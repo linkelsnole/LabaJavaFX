@@ -300,9 +300,6 @@ public class Server {
 
     }
 
-
-
-
     private void sendObjects(int senderId, List<TransferObject> transferObjects) {
         ServerClient receiver = clients.stream()
                 .filter(client -> client.getId() != senderId)
