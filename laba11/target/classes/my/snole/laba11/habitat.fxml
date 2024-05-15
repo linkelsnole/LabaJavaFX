@@ -36,6 +36,13 @@
                         <MenuItem mnemonicParsing="false" onAction="#handleStop" text="Stop" />
                     </items>
                 </Menu>
+                <Menu text="DataBase">
+                    <MenuItem text="Save Worker Ants" onAction="#handleSaveWorkerAnts"/>
+                    <MenuItem text="Load Worker Ants" onAction="#handleLoadWorkerAnts"/>
+                    <MenuItem text="Save Warrior Ants" onAction="#handleSaveWarriorAnts"/>
+                    <MenuItem text="Load Warrior Ants" onAction="#handleLoadWarriorAnts"/>
+                    <MenuItem text="Clear Tables" onAction="#handleClearTables"/>
+                </Menu>
                 <Menu mnemonicParsing="false" text="View">
                     <items>
                         <CheckMenuItem fx:id="showSummaryMenuItem" mnemonicParsing="false" onAction="#handleShowSummaryAction" text="Show Summary" />

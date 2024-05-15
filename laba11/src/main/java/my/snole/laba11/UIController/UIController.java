@@ -1,7 +1,5 @@
 package my.snole.laba11.UIController;
 
-
-
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -25,7 +23,11 @@ import my.snole.laba11.AliveAntsDialog;
 import my.snole.laba11.Habitat;
 import my.snole.laba11.HelloApplication;
 import my.snole.laba11.baseAI.BaseAI;
+import my.snole.laba11.database.DataBase;
 import my.snole.laba11.model.SingletonDynamicArray;
+import my.snole.laba11.model.ant.Ant;
+import my.snole.laba11.model.ant.WarriorAnt;
+import my.snole.laba11.model.ant.WorkerAnt;
 import my.snole.laba11.server.Message;
 import my.snole.laba11.service.Config;
 import my.snole.laba11.service.Console;
@@ -108,21 +110,56 @@ public class UIController {
     private Label idServerLabel;
     @FXML
     private ListView<String> clientListView;
+    private DataBase dataBase;
+
+    @FXML
+    private void handleSaveWorkerAnts() {
+        for (Ant ant : SingletonDynamicArray.getInstance().getAntsList()) {
+            if (ant instanceof WorkerAnt) {
+                DataBase.saveWorkerAnt((WorkerAnt) ant);
+            }
+        }
+    }
+
+    @FXML
+    private void handleLoadWorkerAnts() {
+        List<WorkerAnt> workerAnts = DataBase.loadWorkerAnts();
+        for (WorkerAnt ant : workerAnts) {
+            habitat.restoreAntImageView(ant);
+            SingletonDynamicArray.getInstance().addElement(ant, ant.getBirthTime());
+        }
+    }
+
+    @FXML
+    private void handleSaveWarriorAnts() {
+        for (Ant ant : SingletonDynamicArray.getInstance().getAntsList()) {
+            if (ant instanceof WarriorAnt) {
+                DataBase.saveWarriorAnt((WarriorAnt) ant);
+            }
+        }
+    }
+
+    @FXML
+    private void handleLoadWarriorAnts() {
+        List<WarriorAnt> warriorAnts = DataBase.loadWarriorAnts();
+        for (WarriorAnt ant : warriorAnts) {
+            habitat.restoreAntImageView(ant);
+            SingletonDynamicArray.getInstance().addElement(ant, ant.getBirthTime());
+        }
+    }
+
+    @FXML
+    private void handleClearTables() {
+        DataBase.clearTables();
+    }
+
+
 
     public void updateServerId() {
         Platform.runLater(() -> {
             idServerLabel.setText("ID: " + habitat.getId());
         });
     }
-
-//    public void updateClientListView(List<String> clients) {
-//        Platform.runLater(() -> {
-//            System.out.println("метод updateClientListView вызывает");
-//            // TODO: 11.05.2024 add timer task to update client list
-////            habitat.getClient().sendMessage(new Message(habitat.getClient().getId(), REQUEST_CLIENT_LIST, null));
-//            clientListView.getItems().setAll(clients);
-//        });
-//    }
 
     private Timer clientListUpdateTimer;
     public void updateClientListView(List<String> clients) {

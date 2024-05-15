@@ -2,6 +2,7 @@ module com.example.laba11 {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.fasterxml.jackson.databind;
+    requires java.sql;
 
 //    requires org.kordamp.bootstrapfx.core;
 

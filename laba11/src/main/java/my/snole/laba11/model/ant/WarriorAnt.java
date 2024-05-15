@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 public class WarriorAnt extends Ant implements Serializable {
     private transient Image image;
+
     private int radius = 20;
 
     public WarriorAnt() {
@@ -27,5 +28,8 @@ public class WarriorAnt extends Ant implements Serializable {
 
     public int getRadius() {
         return radius;
+    }
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 }

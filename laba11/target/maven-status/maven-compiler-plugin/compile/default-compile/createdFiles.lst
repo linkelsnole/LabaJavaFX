@@ -18,6 +18,7 @@ my/snole/laba11/HelloApplication.class
 my/snole/laba11/AliveAntsDialog.class
 my/snole/laba11/UIController/UIController$2.class
 my/snole/laba11/model/ant/WorkerAnt.class
+my/snole/laba11/database/DataBase.class
 my/snole/laba11/UIController/UIController$3.class
 my/snole/laba11/baseAI/BaseAI.class
 my/snole/laba11/server/TransferObject.class
