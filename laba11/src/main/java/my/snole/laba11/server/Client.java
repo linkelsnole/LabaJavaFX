@@ -94,7 +94,7 @@ public class Client {
                 }
                 break;
             case "get_objects":
-                requestAnts(message.getTransferObjectCount(), message.getTargetClientId()); // Обновлено для запроса с целевым ID
+                requestAnts(message.getTransferObjectCount(), message.getTargetClientId());
                 break;
             case "send_objects":
                 receiveAnts(message.getAnts());
