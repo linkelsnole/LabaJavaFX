@@ -2,7 +2,6 @@ package my.snole.laba11.database;
 
 import my.snole.laba11.model.ant.WarriorAnt;
 import my.snole.laba11.model.ant.WorkerAnt;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,4 +118,5 @@ public class DataBase {
             e.printStackTrace();
         }
     }
+
 }

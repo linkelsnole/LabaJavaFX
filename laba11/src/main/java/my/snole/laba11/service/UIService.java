@@ -31,4 +31,9 @@ public class UIService {
         int y = (int) (Math.random() * 500);
         return new Point(x, y);
     }
+
+    public static Long formatBirthTime(long birthTimeMillis) {
+        long timeFromStart = birthTimeMillis - Habitat.startTime;
+        return timeFromStart / 1000;
+    }
 }
